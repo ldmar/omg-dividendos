@@ -197,7 +197,7 @@ Pull requests bienvenidos con tests manuales documentados.
 
 **Ohmygoch**
 
-- GitHub: [@ohmygoch](https://github.com/ohmygoch)
+- GitHub: [@ldmar](https://github.com/ldmar)
 
 ---
 
