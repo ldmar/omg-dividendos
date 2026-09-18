@@ -1,0 +1,1911 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0a0e13" />
+<meta name="description" content="Panel PWA para analizar y seguir dividendos de CEDEARs. 100% local, cifrado AES-256, sin servidores. Por Ohmygoch." />
+<meta name="author" content="Ohmygoch" />
+<meta name="color-scheme" content="dark" />
+
+<!-- iOS / Safari -->
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="OMG DividendOS" />
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png" />
+
+<!-- Android / PWA -->
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" type="image/png" sizes="32x32" href="icons/icon-96.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="icons/icon-72.png" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="application-name" content="OMG DividendOS" />
+
+<!-- Open Graph -->
+<meta property="og:title" content="OMG DividendOS" />
+<meta property="og:description" content="Panel PWA para analizar y seguir dividendos de CEDEARs. 100% local, cifrado, sin servidores." />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="icons/icon-512.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="OMG DividendOS" />
+<meta name="twitter:description" content="Panel PWA para dividendos de CEDEARs · por Ohmygoch" />
+<meta name="twitter:image" content="icons/icon-512.png" />
+
+<title>OMG DividendOS — Panel de dividendos CEDEARs</title>
+
+<style>
+  :root{
+    --bg:#0a0e13; --bg2:#0e141d; --card:#121a25; --card2:#16202d;
+    --line:#1e2b3b; --txt:#e8eff7; --dim:#8ba0b8; --dim2:#5f7691;
+    --acc:#00d68f; --acc2:#3b82f6; --warn:#f59e0b; --dang:#ef4444; --pur:#a855f7;
+    --r:14px; --sh:0 8px 30px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:
+      radial-gradient(1200px 600px at 15% -10%, #12324a55, transparent 60%),
+      radial-gradient(900px 500px at 95% 0%, #0d4a3a44, transparent 55%),
+      var(--bg);
+    color:var(--txt);
+    font:14px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Inter,Roboto,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding-bottom:80px;
+  }
+  .top{
+    display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;
+    padding:16px 22px;border-bottom:1px solid var(--line);
+    background:rgba(10,14,19,.78);backdrop-filter:blur(14px);
+    position:sticky;top:0;z-index:50;
+  }
+  .brand{display:flex;gap:12px;align-items:center;min-width:0}
+  .logo{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;flex:none;overflow:hidden;box-shadow:0 6px 20px #00d68f33}
+  .logo svg{width:100%;height:100%;display:block}
+  .brand h1{font-size:16.5px;letter-spacing:-.3px}
+  .brand h1 b{color:var(--acc);font-weight:900;letter-spacing:-.5px}
+  .brand p{font-size:11.5px;color:var(--dim2)}
+  .topActions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .btn{
+    display:inline-flex;align-items:center;gap:7px;cursor:pointer;position:relative;
+    padding:9px 14px;border-radius:10px;border:1px solid var(--line);
+    background:var(--card);color:var(--txt);font-size:13px;font-weight:600;
+    transition:.15s;white-space:nowrap;
+  }
+  .btn:hover{border-color:#2c4054;background:var(--card2);transform:translateY(-1px)}
+  .btn.primary{background:linear-gradient(135deg,var(--acc),#0a9e70);color:#04140e;border:0}
+  .btn.ghost{background:transparent;color:var(--dim)}
+  .btn.ghost:hover{color:var(--dang);border-color:#3a1f22}
+  .btn.icon{padding:9px 11px}
+  .btn .badge{
+    position:absolute;top:-6px;right:-6px;min-width:18px;height:18px;padding:0 5px;
+    border-radius:9px;background:var(--dang);color:#fff;font-size:10.5px;font-weight:800;
+    display:grid;place-items:center;box-shadow:0 0 0 3px var(--bg);line-height:1;
+  }
+  .btn .badge.hidden{display:none}
+  main{max-width:1320px;margin:0 auto;padding:22px}
+  .drop{
+    border:1.5px dashed #23384c;border-radius:18px;padding:46px 22px;text-align:center;
+    background:linear-gradient(180deg,#0e1621,#0b1119);display:flex;flex-direction:column;gap:6px;transition:.2s;
+  }
+  .drop.over{border-color:var(--acc);background:#0d1f1a;transform:scale(1.005)}
+  .drop strong{font-size:16px}
+  .drop span{color:var(--dim2);font-size:12.5px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(178px,1fr));gap:12px;margin-bottom:20px}
+  .kpi{background:linear-gradient(160deg,var(--card),var(--bg2));border:1px solid var(--line);border-radius:var(--r);padding:15px 16px;position:relative;overflow:hidden}
+  .kpi::after{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:var(--acc);opacity:.85}
+  .kpi.b::after{background:var(--acc2)} .kpi.w::after{background:var(--warn)}
+  .kpi.p::after{background:var(--pur)} .kpi.d::after{background:var(--dang)}
+  .kpi label{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:.9px;color:var(--dim2);font-weight:700}
+  .kpi b{display:block;font-size:24px;font-weight:800;letter-spacing:-.9px;margin:5px 0 2px;font-variant-numeric:tabular-nums}
+  .kpi small{color:var(--dim);font-size:11.5px}
+  .tabs{display:flex;gap:6px;border-bottom:1px solid var(--line);margin-bottom:18px;overflow-x:auto;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tabs button{
+    background:none;border:0;color:var(--dim);padding:11px 15px;cursor:pointer;
+    font-size:13.5px;font-weight:600;border-bottom:2px solid transparent;white-space:nowrap;transition:.15s;
+  }
+  .tabs button:hover{color:var(--txt)}
+  .tabs button.on{color:var(--acc);border-bottom-color:var(--acc)}
+  .grid{display:grid;gap:14px}
+  .g2{grid-template-columns:1.35fr 1fr}
+  .g2b{grid-template-columns:1fr 1fr}
+  @media(max-width:960px){.g2,.g2b{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;overflow:hidden}
+  .card h3{font-size:13px;text-transform:uppercase;letter-spacing:.8px;color:var(--dim);margin-bottom:14px;font-weight:700}
+  .bars{display:flex;align-items:flex-end;gap:6px;height:200px;padding-top:22px;overflow-x:auto;scrollbar-width:thin}
+  .bar{flex:1 0 44px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px;min-width:44px;max-width:80px}
+  .bar i{
+    display:block;width:100%;border-radius:6px 6px 2px 2px;
+    background:linear-gradient(180deg,var(--acc),#0a7a58);min-height:3px;
+    transition:height .5s cubic-bezier(.2,.9,.3,1);
+  }
+  .bar:hover i{filter:brightness(1.25)}
+  .bar span{font-size:9.5px;color:var(--dim2);white-space:nowrap;letter-spacing:.2px}
+  .bar em{
+    font-size:9.5px;color:var(--acc);font-weight:700;font-style:normal;
+    font-variant-numeric:tabular-nums;white-space:nowrap;max-width:100%;
+    overflow:hidden;text-overflow:ellipsis;
+  }
+  .rank{display:flex;flex-direction:column;gap:9px}
+  .rk{display:grid;grid-template-columns:64px 1fr auto;gap:10px;align-items:center;font-size:12.5px}
+  .rk b{font-weight:700;font-size:12px;letter-spacing:.3px}
+  .rk .tr{height:7px;border-radius:4px;background:#1a2634;overflow:hidden}
+  .rk .tr i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,var(--acc2),var(--acc))}
+  .rk u{text-decoration:none;font-variant-numeric:tabular-nums;font-weight:700;color:var(--txt)}
+  .tw{overflow:auto;border-radius:12px;border:1px solid var(--line);max-height:640px}
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  thead th{
+    position:sticky;top:0;background:#0f1620;z-index:2;
+    text-align:right;padding:10px 12px;color:var(--dim2);font-size:10.5px;
+    text-transform:uppercase;letter-spacing:.6px;white-space:nowrap;border-bottom:1px solid var(--line);
+    cursor:pointer;user-select:none;
+  }
+  thead th:first-child,tbody td:first-child{text-align:left}
+  thead th:hover{color:var(--acc)}
+  thead th.act{color:var(--acc)}
+  tbody td{padding:9px 12px;text-align:right;border-bottom:1px solid #16202c;font-variant-numeric:tabular-nums;white-space:nowrap}
+  tbody tr:hover{background:#141d29}
+  tbody tr:last-child td{border-bottom:0}
+  .tk{font-weight:800;color:var(--txt);letter-spacing:.2px}
+  .nm{display:block;font-size:10.5px;color:var(--dim2);font-weight:400;max-width:220px;overflow:hidden;text-overflow:ellipsis}
+  .pill{display:inline-block;padding:2px 7px;border-radius:6px;font-size:10.5px;font-weight:700}
+  .p-hi{background:#0d3a2b;color:#3ee0a6} .p-md{background:#3a3010;color:#fbbf24} .p-lo{background:#3a1a1a;color:#f87171}
+  .p-mnl{background:#241a3a;color:#c4a8ff} .p-due{background:#3a1a1a;color:#f87171}
+  .p-soon{background:#3a3010;color:#fbbf24} .p-ok{background:#0d3a2b;color:#3ee0a6}
+  .pos{color:var(--acc);font-weight:700}
+  .neg{color:var(--dang);font-weight:700}
+  .ins{display:flex;flex-direction:column;gap:9px}
+  .ins div{
+    display:flex;gap:10px;align-items:flex-start;padding:11px 13px;border-radius:11px;
+    background:#0f1620;border-left:3px solid var(--acc2);font-size:12.5px;color:#c8d6e6;line-height:1.45;
+  }
+  .ins div.w{border-left-color:var(--warn)}
+  .ins div.d{border-left-color:var(--dang)}
+  .ins div.g{border-left-color:var(--acc)}
+  .ins i{font-style:normal;flex:none;font-size:14px}
+  .hm{overflow:auto}
+  .hm table{font-size:11px}
+  .hm th,.hm td{text-align:center;padding:6px 7px;border:0}
+  .hm td{border-radius:5px;font-variant-numeric:tabular-nums}
+  .hm thead th{background:transparent;position:static;font-size:10px}
+  .tools{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+  input[type=text],input[type=number],input[type=password],input[type=date],select,textarea{
+    background:#0d141d;border:1px solid var(--line);color:var(--txt);
+    padding:9px 12px;border-radius:9px;font-size:13px;outline:none;font-family:inherit;
+  }
+  input:focus,select:focus,textarea:focus{border-color:var(--acc)}
+  input[type=number]{width:110px;text-align:right}
+  input[type=date]{color-scheme:dark}
+  textarea{resize:vertical;min-height:44px}
+  .empty{color:var(--dim2);font-size:13px;padding:26px;text-align:center}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11.5px;color:var(--dim2);margin-top:12px}
+  .legend b{color:var(--dim)}
+  .toast{
+    position:fixed;left:50%;bottom:26px;transform:translate(-50%,80px);
+    background:#16202d;border:1px solid var(--line);padding:12px 20px;border-radius:12px;
+    box-shadow:var(--sh);font-size:13px;z-index:300;opacity:0;transition:.3s;pointer-events:none;
+  }
+  .toast.on{opacity:1;transform:translate(-50%,0)}
+  .toast.err{border-color:#4a2020;color:#fca5a5}
+  .lock{
+    position:fixed;inset:0;z-index:500;display:grid;place-items:center;padding:20px;
+    background:
+      radial-gradient(900px 500px at 50% -10%, #0e3a2eaa, transparent 60%),
+      radial-gradient(700px 400px at 100% 100%, #0f2a4a88, transparent 60%),
+      #060a0f;
+    animation:fade .4s ease;
+  }
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  .lockCard{
+    width:100%;max-width:390px;background:linear-gradient(180deg,#101a26,#0b121a);
+    border:1px solid var(--line);border-radius:22px;padding:34px 30px 26px;
+    box-shadow:0 30px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(0,214,143,.06) inset;
+    text-align:center;display:flex;flex-direction:column;gap:8px;
+  }
+  .lockLogo{width:88px;height:88px;margin:0 auto 6px;filter:drop-shadow(0 10px 26px #00d68f33)}
+  .lockLogo svg{width:100%;height:100%;display:block}
+  .lockCard h2{font-size:22px;letter-spacing:-.6px;font-weight:800}
+  .lockCard h2 b{color:var(--acc)}
+  .lockCard p{font-size:12.5px;color:var(--dim2);line-height:1.5}
+  .lockCard form{display:flex;flex-direction:column;gap:9px;margin-top:16px}
+  .lockCard input{width:100%;text-align:left;padding:13px 15px;font-size:14px;border-radius:11px;background:#0a121a;border:1px solid #223448}
+  .lockCard input:focus{border-color:var(--acc);box-shadow:0 0 0 3px #00d68f22}
+  .lockCard .btn{justify-content:center;padding:13px;font-size:14px;border-radius:11px}
+  .lockErr{color:#fca5a5;font-size:12px;min-height:16px;margin-top:4px}
+  .lockFoot{font-size:11px;color:var(--dim2);margin-top:14px;letter-spacing:.3px;border-top:1px solid var(--line);padding-top:14px}
+  .lockFoot b{color:var(--acc)}
+  .strength{height:4px;border-radius:2px;background:#1a2634;overflow:hidden;margin-top:2px}
+  .strength i{display:block;height:100%;width:0;transition:.25s;border-radius:2px}
+  .modal{position:fixed;inset:0;z-index:400;display:none;place-items:center;padding:20px;background:rgba(3,7,11,.72);backdrop-filter:blur(4px)}
+  .modal.on{display:grid;animation:fade .2s ease}
+  .modalCard{
+    width:100%;max-width:820px;max-height:88vh;overflow:auto;
+    background:linear-gradient(180deg,#111b27,#0d151e);
+    border:1px solid var(--line);border-radius:20px;box-shadow:0 30px 80px rgba(0,0,0,.6);
+  }
+  .modalHead{
+    display:flex;justify-content:space-between;align-items:center;gap:12px;
+    padding:20px 24px;border-bottom:1px solid var(--line);position:sticky;top:0;
+    background:rgba(17,27,39,.96);backdrop-filter:blur(8px);z-index:2;
+  }
+  .modalHead h2{font-size:17px;letter-spacing:-.3px;display:flex;align-items:center;gap:10px}
+  .modalHead h2 span{background:var(--acc);color:#04140e;font-weight:900;padding:3px 9px;border-radius:8px;font-size:12px}
+  .modalBody{padding:22px 24px 28px}
+  .modalBody h4{font-size:12px;text-transform:uppercase;letter-spacing:.9px;color:var(--acc);margin:22px 0 10px;font-weight:800}
+  .modalBody h4:first-child{margin-top:0}
+  .modalBody p,.modalBody li{font-size:13.5px;color:#c8d6e6;line-height:1.65}
+  .modalBody ol,.modalBody ul{margin:6px 0 6px 20px}
+  .modalBody li{margin:4px 0}
+  .modalBody code{background:#0a1219;border:1px solid #1e2b3b;border-radius:5px;padding:1.5px 6px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;color:#7ee8c0}
+  .modalBody pre{background:#0a1219;border:1px solid #1e2b3b;border-radius:10px;padding:14px 16px;overflow:auto;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11.5px;color:#a8e8d0;line-height:1.55;margin:8px 0}
+  .modalBody b{color:var(--txt)}
+  .modalBody .note{background:#0f1a24;border-left:3px solid var(--acc2);border-radius:8px;padding:12px 14px;font-size:12.5px;color:#b8c8da;margin:10px 0}
+  .modalBody .warn{background:#241a0d;border-left:3px solid var(--warn);border-radius:8px;padding:12px 14px;font-size:12.5px;color:#e8d3a8;margin:10px 0}
+  .modalBody table{border-collapse:collapse;width:100%;margin:10px 0;font-size:12.5px}
+  .modalBody th,.modalBody td{border:1px solid #1e2b3b;padding:8px 11px;text-align:left}
+  .modalBody th{background:#0f1620;color:var(--dim);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+  .modalBody td{color:#c8d6e6}
+  .modalBody td code{font-size:11.5px}
+  .foot{text-align:center;color:var(--dim2);font-size:11.5px;padding:26px 16px 10px;border-top:1px solid var(--line);margin-top:30px;letter-spacing:.3px}
+  .foot b{color:var(--acc);font-weight:800}
+  .foot .ver{display:inline-block;margin-left:8px;padding:1px 7px;border-radius:6px;background:#152030;color:#7a8fa5;font-size:10px;font-weight:700}
+  .alertRow{display:flex;flex-direction:column;gap:10px}
+  .alertItem{
+    display:grid;grid-template-columns:auto 1fr auto auto;gap:14px;align-items:center;
+    padding:13px 15px;border-radius:12px;background:#0f1620;border:1px solid #1a2634;
+    border-left:4px solid var(--dim2);
+  }
+  .alertItem.due{border-left-color:var(--dang);background:#1a1013}
+  .alertItem.soon{border-left-color:var(--warn);background:#1a170f}
+  .alertItem.ok{border-left-color:var(--acc);background:#0e1a17}
+  .alertItem.manual{border-left-color:var(--pur)}
+  .alertItem .ad{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-1px;line-height:1}
+  .alertItem .ad small{display:block;font-size:10px;color:var(--dim2);letter-spacing:.5px;text-transform:uppercase;font-weight:700;margin-top:2px}
+  .alertItem .am{font-size:12.5px;color:var(--dim)}
+  .alertItem .am b{color:var(--txt);display:block;font-size:13.5px;margin-bottom:2px}
+  .alertItem .ao{text-align:right;font-variant-numeric:tabular-nums}
+  .alertItem .ao b{display:block;font-size:14.5px;color:var(--acc);font-weight:800;letter-spacing:-.3px}
+  .alertItem .ao small{font-size:10.5px;color:var(--dim2)}
+  .alertItem .ax{display:flex;gap:6px}
+  .alertItem .ax button{
+    background:transparent;border:1px solid var(--line);color:var(--dim);
+    width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:13px;display:grid;place-items:center;transition:.15s;
+  }
+  .alertItem .ax button:hover{color:var(--dang);border-color:#3a1f22;background:#1a1013}
+  .alertItem .ax button.ed:hover{color:var(--acc2);border-color:#1e3a5a;background:#0f1a24}
+  .manualForm{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;
+    padding:14px;background:#0d141d;border:1px solid var(--line);border-radius:12px;margin-bottom:16px;
+  }
+  .manualForm label{display:flex;flex-direction:column;gap:4px;font-size:10.5px;color:var(--dim2);font-weight:700;text-transform:uppercase;letter-spacing:.6px}
+  .manualForm input,.manualForm select,.manualForm textarea{width:100%;text-align:left}
+  .manualForm .full{grid-column:1/-1}
+  .manualForm .submit{display:flex;align-items:flex-end;gap:8px}
+  .manualForm .submit .btn{width:100%;justify-content:center}
+  .toggle{position:relative;display:inline-block;width:46px;height:26px;flex:none;cursor:pointer}
+  .toggle input{display:none}
+  .toggle i{
+    position:absolute;inset:0;border-radius:13px;background:#1a2634;transition:.2s;border:1px solid var(--line);
+  }
+  .toggle i::after{
+    content:"";position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;
+    background:#5f7691;transition:.2s;
+  }
+  .toggle input:checked + i{background:#0a3a2c;border-color:#0f8a63}
+  .toggle input:checked + i::after{left:22px;background:var(--acc);box-shadow:0 0 12px #00d68f88}
+  .notifRow{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #16202c}
+  .notifRow:last-child{border-bottom:0}
+  .notifRow .nl{font-size:13px;font-weight:600}
+  .notifRow .nl small{display:block;color:var(--dim2);font-weight:400;font-size:11.5px;margin-top:2px}
+  .btn.ghost.danger{color:var(--dim)}
+  .btn.ghost.danger:hover{color:var(--dang);border-color:#3a1f22;background:#1a0e10}
+
+  /* --- install UI --- */
+  .installBanner{
+    display:none;align-items:center;gap:14px;padding:14px 18px;
+    background:linear-gradient(135deg,#0d3a2b,#0a2540);
+    border:1px solid #0f8a63;border-radius:14px;margin-bottom:16px;
+    box-shadow:0 8px 24px #00d68f22;
+  }
+  .installBanner.on{display:flex}
+  .installBanner .ii{font-size:26px;flex:none}
+  .installBanner .it{flex:1;font-size:13px;color:#c8e8dc;line-height:1.45}
+  .installBanner .it b{display:block;font-size:14px;color:var(--txt);margin-bottom:2px}
+  .installBanner .ia{display:flex;gap:8px;flex:none}
+  .btn.install{background:linear-gradient(135deg,#00d68f,#0a9e70);color:#04140e;border:0;display:none}
+  .btn.install.on{display:inline-flex}
+  .ios-guide{text-align:left;font-size:13.5px;color:#c8d6e6;line-height:1.7}
+  .ios-guide ol{margin:8px 0 8px 20px}
+  .ios-guide li{margin:6px 0}
+  .ios-guide .ico{display:inline-block;padding:2px 7px;border-radius:5px;background:#0a1219;border:1px solid #1e2b3b;font-size:12px;color:#7ee8c0;font-family:ui-monospace,monospace}
+
+  @media(max-width:640px){
+    main{padding:14px}
+    .kpi b{font-size:20px}
+    .top{padding:12px 14px}
+    .brand p{display:none}
+    .modalBody{padding:18px 16px}
+    .modalHead{padding:16px 18px}
+    .alertItem{grid-template-columns:auto 1fr;gap:10px}
+    .alertItem .ao{text-align:left;grid-column:2}
+    .alertItem .ax{grid-column:2;justify-content:flex-start}
+    .installBanner{flex-direction:column;align-items:flex-start}
+    .installBanner .ia{width:100%}
+    .installBanner .ia .btn{flex:1;justify-content:center}
+  }
+</style>
+</head>
+<body>
+
+<div class="lock" id="lock">
+  <div class="lockCard">
+    <div class="lockLogo" id="lockLogo"></div>
+    <h2><b>OMG</b> DividendOS</h2>
+    <p id="lockSub">Ingresá tu contraseña para desbloquear el panel</p>
+    <form id="lockForm" autocomplete="off">
+      <input type="password" id="lockPass" placeholder="Contraseña" autocomplete="current-password" required />
+      <input type="password" id="lockPass2" placeholder="Confirmar contraseña" autocomplete="new-password" style="display:none" />
+      <div class="strength" id="strength" style="display:none"><i></i></div>
+      <button type="submit" class="btn primary" id="lockBtn">Desbloquear</button>
+    </form>
+    <div class="lockErr" id="lockErr"></div>
+    <div class="lockFoot">Realizado por <b>Ohmygoch</b> · v2.2</div>
+  </div>
+</div>
+
+<header class="top">
+  <div class="brand">
+    <div class="logo" id="brandLogo"></div>
+    <div>
+      <h1><b>OMG</b> DividendOS</h1>
+      <p id="brandSub">Panel de ingresos por dividendos · CEDEARs</p>
+    </div>
+  </div>
+  <div class="topActions">
+    <label class="btn primary">
+      <input type="file" id="file" accept=".xlsx,.xls,.csv" hidden />
+      ↑ Cargar extracto
+    </label>
+    <button class="btn" id="btnExport">↓ CSV</button>
+    <button class="btn install" id="btnInstall">⬇ Instalar app</button>
+    <button class="btn icon" id="btnBell" title="Seguimiento y alertas">🔔<span class="badge hidden" id="bellBadge">0</span></button>
+    <button class="btn icon" id="btnHelp" title="Ayuda">?</button>
+    <button class="btn icon ghost danger" id="btnReset" title="Limpiar todos los datos">🗑</button>
+    <button class="btn icon ghost" id="btnLock" title="Bloquear">🔒</button>
+  </div>
+</header>
+
+<main>
+  <section class="installBanner" id="installBanner">
+    <div class="ii">📲</div>
+    <div class="it">
+      <b>Instalá OMG DividendOS en tu dispositivo</b>
+      Acceso directo, sin barra del navegador, funciona offline y abre como una app nativa.
+    </div>
+    <div class="ia">
+      <button class="btn" id="btnInstallBanner">Instalar ahora</button>
+      <button class="btn ghost" id="btnInstallClose">Ahora no</button>
+    </div>
+  </section>
+
+  <section id="drop" class="drop">
+    <strong>Arrastrá el extracto .xlsx acá</strong>
+    <span>o usá “Cargar extracto”. Todo se procesa localmente: ningún dato sale de tu navegador.</span>
+    <span style="margin-top:6px">¿No sabés cómo descargarlo? <a href="#" id="dropHelp" style="color:var(--acc);font-weight:700;text-decoration:none">Ver guía →</a></span>
+  </section>
+
+  <section id="dash" hidden>
+    <div id="kpis" class="kpis"></div>
+    <nav class="tabs" id="tabs">
+      <button data-v="resumen" class="on">Resumen</button>
+      <button data-v="cedears">Por CEDEAR</button>
+      <button data-v="calendario">Calendario</button>
+      <button data-v="seguimiento">Seguimiento</button>
+      <button data-v="posiciones">Posiciones</button>
+      <button data-v="datos">Datos</button>
+    </nav>
+    <div id="view"></div>
+  </section>
+
+  <footer class="foot">
+    Realizado por <b>Ohmygoch</b><span class="ver">v2.2</span>
+  </footer>
+</main>
+
+<div class="modal" id="helpModal">
+  <div class="modalCard">
+    <div class="modalHead">
+      <h2><span>?</span> Guía de uso · OMG DividendOS</h2>
+      <button class="btn ghost" id="helpClose" style="padding:6px 10px">✕</button>
+    </div>
+    <div class="modalBody">
+      <h4>1 · Cómo descargar el extracto desde tu broker</h4>
+      <ol>
+        <li>Ingresá al <b>home banking</b> o app de tu broker (IOL, Balanz, Rava, PPI, Cocos, Bull Market, etc.).</li>
+        <li>Buscá la sección <b>“Movimientos”</b>, <b>“Extracto de cuenta”</b> o <b>“Historial de operaciones”</b>.</li>
+        <li>Filtrá por tipo <b>“Dividendos”</b>, <b>“Eventos corporativos”</b> o <b>“Renta”</b>.</li>
+        <li>Seleccioná el rango de fechas — se recomienda <b>últimos 12 meses</b> (mínimo 6).</li>
+        <li>Usá la opción <b>“Exportar”</b> o <b>“Descargar”</b> → formato <b>Excel (.xlsx)</b> o <b>CSV</b>.</li>
+        <li>Guardá el archivo. Ya podés arrastrarlo a OMG DividendOS.</li>
+      </ol>
+      <div class="note"><b>Tip:</b> Si tu broker solo muestra dividendos en pantalla, también podés copiarlos a un Excel manualmente — mientras respetes las columnas indicadas abajo, la app los reconocerá.</div>
+
+      <h4>2 · Formato que debe tener el archivo</h4>
+      <table>
+        <thead><tr><th>Columna</th><th>Descripción</th><th>Ejemplo</th></tr></thead>
+        <tbody>
+          <tr><td><code>Fecha</code></td><td>Fecha del movimiento</td><td><code>17/09/2026</code></td></tr>
+          <tr><td><code>Movimiento</code></td><td>Debe incluir “DIVIDENDOS” y el ticker</td><td><code>... DIVIDENDOS UGP CEDEAR ULTRAPAR ...</code></td></tr>
+          <tr><td><code>Débito</code></td><td>Suele ser <code>0,00</code></td><td><code>0,00</code></td></tr>
+          <tr><td><code>Crédito</code></td><td>Monto acreditado (el que se analiza)</td><td><code>6,50</code></td></tr>
+        </tbody>
+      </table>
+
+      <h4>3 · Cómo reconoce la app cada dato</h4>
+      <ul>
+        <li><b>Ticker:</b> busca <code>DIVIDENDOS [TICKER]</code> o <code>DIVIDENDOS [TICKER] CEDEAR [EMISOR]</code>.</li>
+        <li><b>N° de operación:</b> busca <code>NRO OPERACION: 000000</code> para evitar duplicados.</li>
+        <li><b>Monto:</b> usa la columna <b>Crédito</b>. Acepta coma (<code>6,50</code>) o punto (<code>6.50</code>).</li>
+        <li><b>Metadatos:</b> las filas con “Fecha Actual”, “Hora Actual” o “Intervalo de Consulta” se saltan.</li>
+      </ul>
+
+      <h4>4 · Seguimiento de CEDEARs que no están en el extracto</h4>
+      <p>En la pestaña <b>Seguimiento</b> podés agregar manualmente cualquier CEDEAR que ya tengas en cartera y no aparezca en el extracto descargado. Solo necesitás:</p>
+      <ul>
+        <li><b>Ticker</b> (obligatorio).</li>
+        <li><b>Cadencia</b>: cada cuánto paga (mensual, bimestral, trimestral, semestral, anual o personalizada en días).</li>
+        <li><b>Último pago</b>: fecha en que tu broker te acreditó el último dividendo.</li>
+        <li><b>Monto esperado</b> (opcional): para ver la proyección de renta.</li>
+      </ul>
+      <p>Con esos datos, la app calcula la <b>próxima fecha estimada</b> y la muestra en el calendario y en el panel de alertas. Así podés cruzar con tu broker y detectar si <b>dejó de pagar</b> un dividendo (aparece como <i>“vencido”</i>).</p>
+
+      <h4>5 · Notificaciones</h4>
+      <ul>
+        <li>Activá las <b>notificaciones del navegador</b> (te pide permiso una vez).</li>
+        <li>Definí cuántos <b>días antes</b> querés que te avise (por defecto 3).</li>
+        <li>Ver la lista de <b>próximos pagos</b> ordenados por cercanía.</li>
+        <li>Enviarte una <b>notificación de prueba</b>.</li>
+      </ul>
+      <div class="note">Las notificaciones se disparan <b>mientras la app está abierta</b>. La deduplicación diaria evita que te notifique varias veces el mismo día por el mismo pago.</div>
+
+      <h4>6 · Seguridad y contraseña</h4>
+      <p>Todos tus datos se guardan <b>cifrados con AES-256-GCM</b>. La contraseña <b>nunca se almacena</b>: solo un hash derivado con PBKDF2 (150.000 iteraciones).</p>
+      <div class="warn"><b>Si olvidás la contraseña, los datos no se recuperan.</b> Usá el botón <b>🔒</b> para bloquear la sesión cuando quieras.</div>
+
+      <h4>7 · Botón 🗑 (Limpiar)</h4>
+      <p>Elimina <b>todos los datos cargados</b> (extracto, posiciones manuales, tenencias y alertas) pero conserva tu contraseña. Pide <b>doble confirmación</b> antes de borrar.</p>
+
+      <h4>8 · Instalar la app</h4>
+      <p>En <b>Android (Chrome/Edge)</b> aparece un botón <b>“⬇ Instalar app”</b> en el encabezado. En <b>iPhone/iPad</b> tocá <b>Compartir → Añadir a pantalla de inicio</b> desde Safari. En <b>escritorio</b> usá el ícono de instalación en la barra de direcciones.</p>
+
+      <h4>9 · Sobre la app</h4>
+      <p><b>OMG DividendOS</b> es una PWA de análisis de dividendos de CEDEARs. Realizada por <b style="color:var(--acc)">Ohmygoch</b>. Todo el procesamiento es 100% local — ningún dato viaja a internet.</p>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<script>
+/* =========================================================================
+   OMG DividendOS · by Ohmygoch · v2.2
+   Fix: parseDate ISO + botón Limpiar + instalación PWA
+   ========================================================================= */
+
+const $  = s => document.querySelector(s);
+const DAY = 864e5;
+const VAULT_KEY = 'omg.vault.v1';
+
+const NF2 = new Intl.NumberFormat('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const money = n => NF2.format(Number.isFinite(n)?n:0);
+const pct1  = n => (Number.isFinite(n)? (n*100).toFixed(1):'0.0') + '%';
+const esc   = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const sum   = a => a.reduce((x,y)=>x+y,0);
+const mean  = a => a.length ? sum(a)/a.length : 0;
+const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
+
+function median(a){
+  if(!a.length) return 0;
+  const s = [...a].sort((x,y)=>x-y), m = s.length >> 1;
+  return s.length % 2 ? s[m] : (s[m-1]+s[m])/2;
+}
+function stdev(a){
+  if(a.length < 2) return 0;
+  const m = mean(a);
+  return Math.sqrt(sum(a.map(x => (x-m)**2)) / (a.length-1));
+}
+const fdate = d => d ? `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}` : '—';
+const ymd   = d => d ? `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` : '';
+const daysBetween = (a,b) => Math.round((b-a)/DAY);
+const addDays = (d,n) => new Date(d.getFullYear(), d.getMonth(), d.getDate()+n);
+
+const MES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+const MESL = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+function toast(msg, isErr){
+  const t = $('#toast');
+  t.textContent = msg;
+  t.className = 'toast on' + (isErr ? ' err' : '');
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.className = 'toast', 3200);
+}
+
+/* =========================================================================
+   PARSER DE FECHAS — CORREGIDO
+   ========================================================================= */
+function parseDate(v){
+  if(v instanceof Date && !isNaN(v)) return new Date(v.getFullYear(), v.getMonth(), v.getDate());
+  const s = String(v ?? '').trim();
+
+  // 1) ISO estricto YYYY-MM-DD (con o sin hora)
+  let m = s.match(/^(\d{4})-(\d{2})-(\d{2})(?:[T\s].*)?$/);
+  if(m){
+    const d = new Date(+m[1], +m[2]-1, +m[3]);
+    return isNaN(d) ? null : d;
+  }
+
+  // 2) DD/MM/YYYY con separadores / - .
+  m = s.match(/(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})/);
+  if(!m) return null;
+  let y = +m[3]; if(y < 100) y += 2000;
+  const d = new Date(y, +m[2]-1, +m[1]);
+  return isNaN(d) ? null : d;
+}
+
+/* =========================================================================
+   SEGURIDAD · AES-256-GCM + PBKDF2
+   ========================================================================= */
+const b64   = buf => btoa(String.fromCharCode(...new Uint8Array(buf)));
+const unb64 = str => Uint8Array.from(atob(str), c => c.charCodeAt(0));
+
+async function deriveKey(password, salt){
+  const enc = new TextEncoder();
+  const km = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey(
+    { name:'PBKDF2', salt, iterations:150000, hash:'SHA-256' },
+    km, { name:'AES-GCM', length:256 }, false, ['encrypt','decrypt']
+  );
+}
+async function encryptData(key, obj){
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const data = new TextEncoder().encode(JSON.stringify(obj));
+  const ct = await crypto.subtle.encrypt({ name:'AES-GCM', iv }, key, data);
+  return { iv: b64(iv), ct: b64(ct) };
+}
+async function decryptData(key, ivB64, ctB64){
+  const iv = unb64(ivB64), ct = unb64(ctB64);
+  const pt = await crypto.subtle.decrypt({ name:'AES-GCM', iv }, key, ct);
+  return JSON.parse(new TextDecoder().decode(pt));
+}
+
+let sessionKey = null;
+
+const lockEl = $('#lock'), lockForm = $('#lockForm'), lockPass = $('#lockPass'),
+      lockPass2 = $('#lockPass2'), lockBtn = $('#lockBtn'), lockSub = $('#lockSub'), lockErr = $('#lockErr');
+
+function vaultExists(){ return !!localStorage.getItem(VAULT_KEY); }
+function setLockMode(mode){
+  lockEl.dataset.mode = mode;
+  if(mode === 'setup'){
+    lockSub.textContent = 'Creá una contraseña para proteger tu panel. No se puede recuperar si la olvidás.';
+    lockPass2.style.display = ''; lockBtn.textContent = 'Crear y entrar';
+    lockPass.setAttribute('autocomplete','new-password');
+    lockPass.placeholder = 'Contraseña (mín. 6 caracteres)';
+    $('#strength').style.display = '';
+  } else {
+    lockSub.textContent = 'Ingresá tu contraseña para desbloquear el panel';
+    lockPass2.style.display = 'none'; lockBtn.textContent = 'Desbloquear';
+    lockPass.setAttribute('autocomplete','current-password');
+    lockPass.placeholder = 'Contraseña';
+    $('#strength').style.display = 'none';
+  }
+  lockPass.value = ''; lockPass2.value = ''; lockErr.textContent = '';
+  setTimeout(() => lockPass.focus(), 80);
+}
+function showLock(){ lockEl.style.display = 'grid'; setLockMode(vaultExists() ? 'unlock' : 'setup'); }
+function hideLock(){ lockEl.style.display = 'none'; }
+
+async function createVault(password){
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const key = await deriveKey(password, salt);
+  const { iv, ct } = await encryptData(key, {
+    meta:{}, holdings:{}, movs:[],
+    manual:{}, settings:{ alertsEnabled:false, alertDaysBefore:3, lastAlertKey:'' }
+  });
+  localStorage.setItem(VAULT_KEY, JSON.stringify({ salt: b64(salt), iv, ct }));
+  sessionKey = key;
+}
+async function unlockVault(password){
+  const rec = JSON.parse(localStorage.getItem(VAULT_KEY));
+  const salt = unb64(rec.salt);
+  const key = await deriveKey(password, salt);
+  const payload = await decryptData(key, rec.iv, rec.ct);
+  sessionKey = key;
+  return payload;
+}
+async function saveVault(payload){
+  if(!sessionKey) return;
+  try{
+    const { iv, ct } = await encryptData(sessionKey, payload);
+    const rec = JSON.parse(localStorage.getItem(VAULT_KEY) || '{}');
+    localStorage.setItem(VAULT_KEY, JSON.stringify({ salt: rec.salt, iv, ct }));
+  }catch(e){ console.warn('save error', e); }
+}
+
+lockPass.addEventListener('input', () => {
+  if(lockEl.dataset.mode !== 'setup') return;
+  const v = lockPass.value; let s = 0;
+  if(v.length >= 6) s++; if(v.length >= 10) s++;
+  if(/[A-Z]/.test(v) && /[a-z]/.test(v)) s++;
+  if(/\d/.test(v)) s++; if(/[^A-Za-z0-9]/.test(v)) s++;
+  const bar = $('#strength i');
+  bar.style.width = [0,22,45,68,88,100][Math.min(s,5)] + '%';
+  bar.style.background = s<=1?'#ef4444':s===2?'#f59e0b':s===3?'#eab308':'#00d68f';
+});
+
+lockForm.addEventListener('submit', async e => {
+  e.preventDefault();
+  lockErr.textContent = '';
+  const mode = lockEl.dataset.mode, pass = lockPass.value;
+
+  if(!window.crypto?.subtle){ lockErr.textContent = 'Tu navegador no soporta cifrado.'; return; }
+
+  if(mode === 'setup'){
+    if(pass.length < 6){ lockErr.textContent = 'La contraseña debe tener al menos 6 caracteres.'; return; }
+    if(pass !== lockPass2.value){ lockErr.textContent = 'Las contraseñas no coinciden.'; return; }
+    lockBtn.disabled = true; lockBtn.textContent = 'Creando…';
+    try{
+      await createVault(pass); hideLock();
+      initApp({ meta:{}, holdings:{}, movs:[], manual:{}, settings:{ alertsEnabled:false, alertDaysBefore:3, lastAlertKey:'' } });
+      toast('✓ Panel protegido creado');
+    }catch(err){ console.error(err); lockErr.textContent = 'Error al crear el panel.'; }
+    finally{ lockBtn.disabled = false; lockBtn.textContent = 'Crear y entrar'; }
+  } else {
+    lockBtn.disabled = true; lockBtn.textContent = 'Verificando…';
+    try{
+      const payload = await unlockVault(pass);
+      hideLock(); initApp(payload);
+    }catch(err){
+      lockErr.textContent = 'Contraseña incorrecta.';
+      lockPass.value = ''; lockPass.focus();
+    } finally{ lockBtn.disabled = false; lockBtn.textContent = 'Desbloquear'; }
+  }
+});
+
+$('#btnLock').addEventListener('click', () => {
+  sessionKey = null;
+  state.movs = []; state.meta = {}; state.holdings = {}; state.manual = {};
+  $('#dash').hidden = true; $('#drop').hidden = false;
+  showLock(); toast('Sesión bloqueada');
+});
+
+/* =========================================================================
+   BOTÓN LIMPIAR — con doble confirmación
+   ========================================================================= */
+$('#btnReset').addEventListener('click', async () => {
+  const hasData = state.movs.length
+    || Object.keys(state.manual).length
+    || Object.keys(state.holdings).length;
+
+  if(!hasData){ toast('No hay datos para limpiar'); return; }
+
+  const ok1 = confirm(
+    '⚠️ LIMPIAR DATOS · Paso 1 de 2\n\n' +
+    'Se borrará TODO lo siguiente:\n\n' +
+    '  · Extracto de movimientos\n' +
+    '  · Posiciones manuales en seguimiento\n' +
+    '  · Tenencias y precios cargados\n' +
+    '  · Configuración de alertas\n\n' +
+    'Tu contraseña se conserva.\n\n' +
+    '¿Querés continuar?'
+  );
+  if(!ok1) return;
+
+  const ok2 = confirm(
+    '⚠️ ÚLTIMA CONFIRMACIÓN · Paso 2 de 2\n\n' +
+    'Esta acción es IRREVERSIBLE. Los datos cifrados se eliminarán de forma permanente y no podrán recuperarse.\n\n' +
+    '¿Confirmás la eliminación total?'
+  );
+  if(!ok2) return;
+
+  state.movs = [];
+  state.meta = {};
+  state.holdings = {};
+  state.manual = {};
+  state.settings = { alertsEnabled:false, alertDaysBefore:3, lastAlertKey:'' };
+
+  await saveVault({
+    meta:{}, holdings:{}, manual:{},
+    settings: state.settings, movs:[]
+  });
+
+  $('#dash').hidden = true;
+  $('#drop').hidden = false;
+  $('#brandSub').textContent = 'Panel de ingresos por dividendos · CEDEARs';
+  const b = $('#bellBadge'); b.textContent = '0'; b.classList.add('hidden');
+  toast('✓ Todos los datos fueron eliminados');
+});
+
+/* =========================================================================
+   PARSER EXCEL / CSV
+   ========================================================================= */
+function norm(s){ return String(s ?? '').toLowerCase().trim(); }
+function parseNum(v){
+  if(v == null || v === '') return 0;
+  if(typeof v === 'number') return isFinite(v) ? v : 0;
+  let s = String(v).replace(/[^\d.,-]/g,'');
+  if(!s) return 0;
+  const lc = s.lastIndexOf(','), lp = s.lastIndexOf('.');
+  if(lc > -1 && lp > -1){ if(lc > lp) s = s.replace(/\./g,'').replace(',','.'); else s = s.replace(/,/g,''); }
+  else if(lc > -1){ s = s.replace(',','.'); }
+  const n = parseFloat(s);
+  return isFinite(n) ? n : 0;
+}
+function parseMov(raw){
+  const t = String(raw ?? '').replace(/\s+/g,' ').trim();
+  const op = (t.match(/NRO\.?\s*OPERACI[OÓ]N:?\s*(\d+)/i) || [])[1] || null;
+  const tipo = /dividendo/i.test(t)  ? 'Dividendo'
+             : /amortiza/i.test(t)   ? 'Amortización'
+             : /renta/i.test(t)      ? 'Renta'
+             : /suscrip/i.test(t)    ? 'Suscripción'
+             : 'Otro';
+  let ticker = null, name = '';
+  const dm = t.match(/DIVIDENDOS?\s+(.+?)(?:\s+NRO\.?\s*OPERACI|$)/i);
+  if(dm){
+    const rest = dm[1].trim();
+    const ced = rest.match(/^(.+?)\s+CEDEAR\s+(.+)$/i);
+    if(ced){ ticker = ced[1].trim(); name = ced[2].trim(); }
+    else { const p = rest.split(/\s+/); ticker = p[0]; name = p.slice(1).join(' '); }
+  }
+  return { ticker: (ticker || 'S/D').toUpperCase(), name: name.toUpperCase(), op, tipo };
+}
+async function readFileRows(file){
+  const buf = await file.arrayBuffer();
+  if(/\.csv$/i.test(file.name)){
+    const txt = new TextDecoder('utf-8').decode(buf);
+    const first = txt.split('\n')[0];
+    const sep = (first.match(/;/g)||[]).length > (first.match(/,/g)||[]).length ? ';' : ',';
+    return txt.split(/\r?\n/).filter(l => l.trim()).map(line => {
+      const out = []; let cur = '', q = false;
+      for(const ch of line){
+        if(ch === '"'){ q = !q; continue; }
+        if(ch === sep && !q){ out.push(cur); cur = ''; continue; }
+        cur += ch;
+      }
+      out.push(cur); return out;
+    });
+  }
+  if(typeof XLSX === 'undefined') throw new Error('No se pudo cargar el lector de Excel.');
+  const wb = XLSX.read(buf, { type:'array', cellDates:true });
+  const sheetName = wb.SheetNames.find(n => /cuenta|movim|extracto/i.test(n)) || wb.SheetNames[0];
+  return XLSX.utils.sheet_to_json(wb.Sheets[sheetName], { header:1, raw:true, defval:'' });
+}
+function rowsToData(rows){
+  const meta = {};
+  rows.slice(0, 12).forEach(r => {
+    const t = (r||[]).map(x => String(x ?? '')).join(' ');
+    let m;
+    if((m = t.match(/Fecha Actual:\s*([\d\/]+)/i))) meta.fechaActual = m[1];
+    if((m = t.match(/Hora Actual:\s*([\d:]+)/i)))   meta.horaActual  = m[1];
+    if((m = t.match(/Intervalo de Consulta:\s*del\s*([\d\/]+)\s*al\s*([\d\/]+)/i))){ meta.desde = m[1]; meta.hasta = m[2]; }
+  });
+  let hi = -1;
+  for(let i = 0; i < Math.min(rows.length, 25); i++){
+    const r = (rows[i]||[]).map(norm);
+    if(r.includes('fecha') && r.some(c => c.includes('movimiento'))){ hi = i; break; }
+  }
+  if(hi < 0) throw new Error('No encontré los encabezados (Fecha / Movimiento / Débito / Crédito).');
+  const head = (rows[hi]||[]).map(norm);
+  const idx = (...names) => { for(const n of names){ const i = head.findIndex(h => h.includes(n)); if(i > -1) return i; } return -1; };
+  const cF = idx('fecha'), cM = idx('movimiento','descripcion','detalle'),
+        cD = idx('debito','débito'), cC = idx('credito','crédito');
+  const movs = [];
+  for(let i = hi+1; i < rows.length; i++){
+    const r = rows[i] || [];
+    const d = parseDate(r[cF]); if(!d) continue;
+    const rawMov = String(r[cM] ?? '');
+    const deb = parseNum(r[cD]), cre = parseNum(r[cC]);
+    if(!rawMov && !deb && !cre) continue;
+    const p = parseMov(rawMov);
+    movs.push({
+      id: p.op || `${ymd(d)}|${p.ticker}|${cre}`,
+      date: d, ticker: p.ticker, name: p.name, op: p.op, tipo: p.tipo,
+      debito: deb, credito: cre, neto: cre - deb,
+      raw: rawMov.replace(/\s+/g,' ').trim()
+    });
+  }
+  if(!movs.length) throw new Error('El archivo no contiene movimientos con fecha válida.');
+  return { meta, movs };
+}
+
+/* =========================================================================
+   MÉTRICAS
+   ========================================================================= */
+function compute(){
+  const all     = state.movs;
+  const credits = all.filter(m => m.credito > 0);
+  const debits  = all.filter(m => m.debito  > 0);
+
+  const total = sum(credits.map(m => m.credito));
+  const dates = credits.map(m => m.date).sort((a,b) => a-b);
+  const d0 = dates[0] || new Date(), d1 = dates[dates.length-1] || new Date();
+  const periodDays = Math.max(1, daysBetween(d0, d1) + 1);
+  const monthsSpan = Math.max(1, periodDays / 30.4375);
+
+  const monthlyRaw = new Map();
+  credits.forEach(m => {
+    const k = `${m.date.getFullYear()}-${String(m.date.getMonth()+1).padStart(2,'0')}`;
+    monthlyRaw.set(k, (monthlyRaw.get(k) || 0) + m.credito);
+  });
+  const monthly = [];
+  let cur = new Date(d0.getFullYear(), d0.getMonth(), 1);
+  const endM = new Date(d1.getFullYear(), d1.getMonth(), 1);
+  let guard = 0;
+  while(cur <= endM && guard++ < 240){
+    const k = `${cur.getFullYear()}-${String(cur.getMonth()+1).padStart(2,'0')}`;
+    monthly.push({ key:k, label:`${MES[cur.getMonth()]} ${String(cur.getFullYear()).slice(2)}`,
+                   year:cur.getFullYear(), month:cur.getMonth(), total: monthlyRaw.get(k) || 0 });
+    cur = new Date(cur.getFullYear(), cur.getMonth()+1, 1);
+  }
+  const monthVals  = monthly.map(m => m.total);
+  const activeMonths = monthVals.filter(v => v > 0).length;
+
+  const map = new Map();
+  credits.forEach(m => {
+    if(!map.has(m.ticker)) map.set(m.ticker, { ticker:m.ticker, name:'', items:[] });
+    const o = map.get(m.ticker);
+    o.items.push(m);
+    if(!o.name && m.name) o.name = m.name;
+  });
+
+  const tickers = [...map.values()].map(o => {
+    o.items.sort((a,b) => a.date - b.date);
+    const amts = o.items.map(x => x.credito);
+    const tot  = sum(amts); const n = amts.length;
+    const avg  = tot / n; const med = median(amts); const sd = stdev(amts);
+    const cv   = avg > 0 ? sd / avg : 0;
+    const first = o.items[0].date; const last = o.items[n-1].date;
+    const span  = daysBetween(first, last);
+    const freq  = n > 1 ? span / (n-1) : null;
+    const perYear = freq && freq > 0 ? 365 / freq : null;
+    const runRate = perYear ? avg * perYear : tot * (365 / periodDays);
+    const nextDate = freq ? addDays(last, Math.round(freq)) : null;
+    const conf = n >= 5 ? 1 : n >= 3 ? .75 : n >= 2 ? .5 : .25;
+    const consistency = Math.round(100 * conf * (1 - clamp(cv, 0, 1)));
+    const nextInDays = nextDate ? daysBetween(new Date(), nextDate) : null;
+    return {
+      ticker:o.ticker, name:o.name, n, total:tot, avg, med, sd, cv,
+      min: Math.min(...amts), max: Math.max(...amts),
+      first, last, span, freq, perYear, runRate, nextDate, nextInDays,
+      consistency, conf,
+      share: total > 0 ? tot / total : 0,
+      items: o.items, isManual:false, manualEntry:null
+    };
+  }).sort((a,b) => b.total - a.total);
+
+  Object.values(state.manual).forEach(m => {
+    const cadence = +m.cadence || 0;
+    const lastPay = parseDate(m.lastPay);
+    const amount  = +m.amount || 0;
+    const existing = tickers.find(t => t.ticker === m.ticker);
+    if(existing){
+      existing.manualEntry = m;
+      if(cadence > 0){
+        existing.freq = cadence;
+        existing.perYear = 365 / cadence;
+        const base = lastPay || existing.last;
+        if(base){
+          existing.nextDate = addDays(base, cadence);
+          existing.nextInDays = daysBetween(new Date(), existing.nextDate);
+        }
+        if(amount > 0){
+          existing.avg = amount;
+          existing.runRate = (365 / cadence) * amount;
+        }
+      }
+    } else {
+      const base = lastPay;
+      const nextDate = (base && cadence > 0) ? addDays(base, cadence) : null;
+      tickers.push({
+        ticker: m.ticker, name: m.name || '', n: 0, total: 0,
+        avg: amount, med: amount, sd: 0, cv: 0, min: 0, max: 0,
+        first: base, last: base, span: 0,
+        freq: cadence || null,
+        perYear: cadence ? 365 / cadence : null,
+        runRate: (cadence && amount) ? (365 / cadence) * amount : 0,
+        nextDate,
+        nextInDays: nextDate ? daysBetween(new Date(), nextDate) : null,
+        consistency: 50, conf: .5,
+        share: 0, items: [],
+        isManual: true, manualEntry: m
+      });
+    }
+  });
+
+  tickers.sort((a,b) => b.total - a.total || b.runRate - a.runRate);
+
+  const outliers = [];
+  tickers.forEach(t => {
+    if(t.n < 3 || t.sd <= 0) return;
+    t.items.forEach(m => {
+      const z = (m.credito - t.avg) / t.sd;
+      if(Math.abs(z) >= 2) outliers.push({ ...m, z, ticker:t.ticker });
+    });
+  });
+
+  const hhi = sum(tickers.map(t => t.share ** 2));
+  const effN = hhi > 0 ? 1 / hhi : 0;
+  const top5 = sum(tickers.slice(0,5).map(t => t.share));
+  const top1 = tickers[0] || null;
+  const runRate12m = sum(tickers.map(t => t.runRate));
+
+  const dowCount = Array(7).fill(0);
+  credits.forEach(m => dowCount[m.date.getDay()]++);
+  const dowName = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+  const topDow = dowCount.indexOf(Math.max(...dowCount));
+
+  const bestMonth  = monthly.reduce((a,b) => b.total > a.total ? b : a, monthly[0] || {total:0});
+  const worstMonth = monthly.filter(m => m.total > 0).reduce((a,b) => b.total < a.total ? b : a, { total: Infinity });
+
+  const upcoming = tickers
+    .filter(t => t.nextDate)
+    .map(t => {
+      const d = t.nextInDays;
+      const estado = d == null ? 'unknown'
+                  : d < -7 ? 'vencido'
+                  : d < 0  ? 'demorado'
+                  : d === 0 ? 'hoy'
+                  : d <= 7 ? 'pronto'
+                  : 'programado';
+      return { ...t, estado };
+    })
+    .sort((a,b) => a.nextDate - b.nextDate);
+
+  const ins = [];
+  if(top1 && top1.share > .25){
+    ins.push({ c:'w', i:'⚠️', t:`Concentración alta: <b>${top1.ticker}</b> representa el ${pct1(top1.share)} de tus dividendos del período ($${money(top1.total)}).` });
+  }
+  if(hhi > .25){
+    ins.push({ c:'w', i:'📊', t:`HHI <b>${hhi.toFixed(3)}</b> → <b>${effN.toFixed(1)} fuentes efectivas</b>. Por debajo de 5 se considera frágil.` });
+  } else if(effN > 0){
+    ins.push({ c:'g', i:'✅', t:`Diversificación saludable: HHI ${hhi.toFixed(3)} → <b>${effN.toFixed(1)} fuentes efectivas</b>.` });
+  }
+  ins.push({ c:'g', i:'💵', t:`Renta pasiva promedio: <b>$${money(total / periodDays)}/día</b> · <b>$${money(total / monthsSpan)}/mes</b> en ${periodDays} días.` });
+  if(outliers.length){
+    const o = outliers.sort((a,b) => Math.abs(b.z) - Math.abs(a.z))[0];
+    ins.push({ c:'d', i:'🔍', t:`Pago atípico: <b>${o.ticker}</b> $${money(o.credito)} el ${fdate(o.date)} (z=${o.z.toFixed(1)}).` });
+  }
+  if(bestMonth && bestMonth.total > 0){
+    ins.push({ c:'', i:'📅', t:`Mes más fuerte: <b>${MESL[bestMonth.month]} ${bestMonth.year}</b> con $${money(bestMonth.total)} (${pct1(bestMonth.total / total)}).` });
+  }
+  if(activeMonths < monthly.length){
+    ins.push({ c:'', i:'⏳', t:`${monthly.length - activeMonths} de ${monthly.length} meses sin acreditaciones.` });
+  }
+  const vencidos = upcoming.filter(t => t.estado === 'vencido');
+  if(vencidos.length){
+    ins.push({ c:'d', i:'🚨', t:`<b>${vencidos.length} dividendo(s) probablemente impagos</b>: ${vencidos.slice(0,5).map(t => t.ticker).join(', ')}${vencidos.length>5?'…':''}.` });
+  }
+  const porVencer = upcoming.filter(t => t.estado === 'hoy' || t.estado === 'pronto');
+  if(porVencer.length){
+    ins.push({ c:'w', i:'🔔', t:`<b>${porVencer.length} pago(s) por acreditarse esta semana:</b> ${porVencer.slice(0,5).map(t => t.ticker).join(', ')}.` });
+  }
+
+  return {
+    meta: state.meta, movs: all, credits, debits,
+    total, nPagos: credits.length, periodDays, monthsSpan,
+    d0, d1, monthly, monthVals, activeMonths,
+    tickers, outliers, hhi, effN, top5, top1,
+    runRate12m, bestMonth, worstMonth, dowCount, topDow, insights: ins,
+    upcoming,
+    avgPerPayment: credits.length ? total / credits.length : 0,
+    medianPayment: median(credits.map(m => m.credito))
+  };
+}
+
+/* =========================================================================
+   NOTIFICACIONES
+   ========================================================================= */
+async function ensureNotifPermission(){
+  if(!('Notification' in window)) return false;
+  if(Notification.permission === 'granted') return true;
+  if(Notification.permission === 'denied')  return false;
+  const p = await Notification.requestPermission();
+  return p === 'granted';
+}
+function notifIcon(){ try{ return 'data:image/svg+xml;base64,' + btoa(ICON_SVG); }catch(e){ return undefined; } }
+
+function checkUpcomingAlerts(A){
+  const s = state.settings;
+  if(!s.alertsEnabled) return;
+  if(!('Notification' in window) || Notification.permission !== 'granted') return;
+  const days = +s.alertDaysBefore || 3;
+  const upcoming = A.upcoming.filter(t => t.nextInDays != null && t.nextInDays >= 0 && t.nextInDays <= days);
+  if(!upcoming.length) return;
+  const key = `${ymd(new Date())}|${upcoming.map(t => t.ticker + ':' + t.nextInDays).sort().join(',')}`;
+  if(s.lastAlertKey === key) return;
+  const lineas = upcoming.slice(0, 5).map(t =>
+    `${t.ticker}: $${money(t.avg)} ${t.nextInDays === 0 ? 'hoy' : 'en ' + t.nextInDays + 'd'} (${fdate(t.nextDate)})`
+  ).join('\n');
+  const extra = upcoming.length > 5 ? `\n+${upcoming.length - 5} más…` : '';
+  try{
+    new Notification('OMG DividendOS · Dividendos próximos', {
+      body: lineas + extra, icon: notifIcon(), tag: 'omg-div-' + ymd(new Date())
+    });
+    s.lastAlertKey = key; persist();
+  }catch(e){ console.warn('notif error', e); }
+}
+function updateBellBadge(A){
+  const days = +state.settings.alertDaysBefore || 3;
+  const n = (A?.upcoming || []).filter(t => t.nextInDays != null && t.nextInDays >= 0 && t.nextInDays <= days).length;
+  const b = $('#bellBadge');
+  b.textContent = n;
+  b.classList.toggle('hidden', n === 0);
+}
+
+/* =========================================================================
+   RENDER
+   ========================================================================= */
+function render(){
+  const A = compute();
+  state.A = A;
+  renderKPIs(A);
+  updateBellBadge(A);
+  const v = state.view;
+  if(v === 'resumen')          renderResumen(A);
+  else if(v === 'cedears')     renderCedears(A);
+  else if(v === 'calendario')  renderCalendario(A);
+  else if(v === 'seguimiento') renderSeguimiento(A);
+  else if(v === 'posiciones')  renderPosiciones(A);
+  else                         renderDatos(A);
+  checkUpcomingAlerts(A);
+}
+
+function renderKPIs(A){
+  const medMensual = median(A.monthVals.filter(v => v > 0));
+  const prox = A.upcoming.filter(t => t.nextInDays != null && t.nextInDays >= 0)
+                         .sort((a,b)=>a.nextDate-b.nextDate)[0];
+  $('#kpis').innerHTML = `
+    <div class="kpi">
+      <label>Total cobrado</label>
+      <b>$${money(A.total)}</b>
+      <small>${A.nPagos} acreditaciones · ${A.tickers.length} CEDEARs</small>
+    </div>
+    <div class="kpi b">
+      <label>Renta mensual promedio</label>
+      <b>$${money(A.total / A.monthsSpan)}</b>
+      <small>mediana meses activos $${money(medMensual)}</small>
+    </div>
+    <div class="kpi p">
+      <label>Proyección 12 meses</label>
+      <b>$${money(A.runRate12m)}</b>
+      <small>run-rate según cadencia</small>
+    </div>
+    <div class="kpi w">
+      <label>Próximo pago</label>
+      <b>${prox ? esc(prox.ticker) : '—'}</b>
+      <small>${prox ? `${fdate(prox.nextDate)} · $${money(prox.avg)}` : 'sin datos'}</small>
+    </div>
+    <div class="kpi d">
+      <label>Concentración (HHI)</label>
+      <b>${A.hhi.toFixed(3)}</b>
+      <small>${A.effN.toFixed(1)} fuentes · top5 ${pct1(A.top5)}</small>
+    </div>
+  `;
+}
+
+function renderResumen(A){
+  const maxM = Math.max(...A.monthly.map(m => m.total), 1);
+  const bars = A.monthly.map(m => `
+    <div class="bar" title="${MESL[m.month]} ${m.year}: $${money(m.total)}">
+      <em>${m.total > 0 ? money(m.total) : ''}</em>
+      <i style="height:${Math.max(3, (m.total / maxM) * 100)}%"></i>
+      <span>${m.label}</span>
+    </div>`).join('');
+
+  const top = A.tickers.slice(0, 10);
+  const maxT = top[0]?.total || 1;
+  const rank = top.map(t => `
+    <div class="rk">
+      <b>${esc(t.ticker)}</b>
+      <div class="tr"><i style="width:${(t.total / maxT) * 100}%"></i></div>
+      <u>$${money(t.total)}</u>
+    </div>`).join('');
+
+  const ins = A.insights.map(x => `<div class="${x.c}"><i>${x.i}</i><span>${x.t}</span></div>`).join('');
+
+  const seas = Array(12).fill(0), seasN = Array(12).fill(0);
+  A.credits.forEach(m => { seas[m.date.getMonth()] += m.credito; seasN[m.date.getMonth()]++; });
+  const maxS = Math.max(...seas, 1);
+
+  $('#view').innerHTML = `
+    <div class="grid g2" style="margin-bottom:14px">
+      <div class="card">
+        <h3>Evolución mensual de cobros</h3>
+        <div class="bars">${bars}</div>
+        <div class="legend">
+          <span><b>Período:</b> ${fdate(A.d0)} → ${fdate(A.d1)}</span>
+          <span><b>Promedio por pago:</b> $${money(A.avgPerPayment)}</span>
+          <span><b>Mediana:</b> $${money(A.medianPayment)}</span>
+          <span><b>${A.monthly.length}</b> meses en pantalla</span>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Insights automáticos</h3>
+        <div class="ins">${ins}</div>
+      </div>
+    </div>
+    <div class="grid g2b">
+      <div class="card">
+        <h3>Top 10 CEDEARs por monto cobrado</h3>
+        <div class="rank">${rank}</div>
+      </div>
+      <div class="card">
+        <h3>Estacionalidad por mes calendario</h3>
+        <div class="bars">
+          ${seas.map((v,i) => `
+            <div class="bar" title="${MESL[i]}: $${money(v)} (${seasN[i]} pagos)">
+              <i style="height:${Math.max(2, (v / maxS) * 100)}%;background:linear-gradient(180deg,#3b82f6,#1d4ed8)"></i>
+              <span>${MES[i]}</span>
+            </div>`).join('')}
+        </div>
+        <div class="legend"><span>Suma acumulada agrupada por mes calendario.</span></div>
+      </div>
+    </div>
+  `;
+}
+
+function renderCedears(A){
+  const cols = [
+    { k:'ticker', t:'CEDEAR' }, { k:'n', t:'Pagos' }, { k:'total', t:'Total' },
+    { k:'share', t:'% cartera' }, { k:'avg', t:'Promedio' }, { k:'med', t:'Mediana' },
+    { k:'cv', t:'CV (volat.)' }, { k:'freq', t:'Cada (días)' }, { k:'perYear', t:'Pagos/año' },
+    { k:'runRate', t:'Run-rate 12m' }, { k:'last', t:'Último pago' },
+    { k:'nextDate', t:'Próximo est.' }, { k:'consistency', t:'Consistencia' }
+  ];
+  const s = state.sort;
+  const rows = [...A.tickers].sort((a,b) => {
+    const va = a[s.key], vb = b[s.key];
+    if(va == null && vb == null) return 0;
+    if(va == null) return 1; if(vb == null) return -1;
+    if(va instanceof Date) return (va - vb) * s.dir;
+    return (typeof va === 'string' ? va.localeCompare(vb) : va - vb) * s.dir;
+  });
+  const q = state.q.trim().toUpperCase();
+  const filtered = q ? rows.filter(r => r.ticker.includes(q) || r.name.includes(q)) : rows;
+  const head = cols.map(c => `<th data-k="${c.k}" class="${s.key===c.k?'act':''}">${c.t}${s.key===c.k?(s.dir>0?' ▲':' ▼'):''}</th>`).join('');
+  const body = filtered.map(t => {
+    const cons = t.consistency >= 70 ? 'p-hi' : t.consistency >= 40 ? 'p-md' : 'p-lo';
+    const nextTxt = t.nextDate
+      ? `${fdate(t.nextDate)}${t.nextInDays != null ? `<span class="nm">${t.nextInDays >= 0 ? 'en '+t.nextInDays+' d' : 'vencido'}</span>` : ''}`
+      : '<span class="nm">s/d</span>';
+    const badge = t.isManual ? ' <span class="pill p-mnl">manual</span>' : '';
+    return `
+      <tr>
+        <td><span class="tk">${esc(t.ticker)}</span>${badge}<span class="nm">${esc(t.name)}</span></td>
+        <td>${t.n || '—'}</td>
+        <td class="${t.total>0?'pos':''}">${t.total>0 ? '$'+money(t.total) : '—'}</td>
+        <td>${t.total>0 ? pct1(t.share) : '—'}</td>
+        <td>$${money(t.avg)}</td>
+        <td>$${money(t.med)}</td>
+        <td class="${t.cv>.6?'neg':t.cv<.25?'pos':''}">${t.n ? (t.cv*100).toFixed(0)+'%' : '—'}</td>
+        <td>${t.freq ? Math.round(t.freq) : '—'}</td>
+        <td>${t.perYear ? t.perYear.toFixed(1) : '—'}</td>
+        <td>$${money(t.runRate)}</td>
+        <td>${fdate(t.last)}</td>
+        <td>${nextTxt}</td>
+        <td><span class="pill ${cons}">${t.consistency}</span></td>
+      </tr>`;
+  }).join('');
+  $('#view').innerHTML = `
+    <div class="tools">
+      <input type="text" id="q" placeholder="Buscar ticker o emisor…" value="${esc(state.q)}" style="min-width:240px">
+      <span style="color:var(--dim2);font-size:12px">${filtered.length} de ${A.tickers.length} activos · clic en encabezados para ordenar</span>
+    </div>
+    <div class="tw">
+      <table>
+        <thead><tr>${head}</tr></thead>
+        <tbody>${body || '<tr><td colspan="13" class="empty">Sin resultados</td></tr>'}</tbody>
+      </table>
+    </div>`;
+  const qi = $('#q');
+  if(qi){
+    qi.oninput = e => {
+      state.q = e.target.value;
+      renderCedears(state.A);
+      const n = $('#q'); n.focus(); n.setSelectionRange(n.value.length, n.value.length);
+    };
+  }
+  document.querySelectorAll('thead th[data-k]').forEach(th => {
+    th.onclick = () => {
+      const k = th.dataset.k;
+      state.sort = { key:k, dir: state.sort.key === k ? -state.sort.dir : -1 };
+      renderCedears(state.A);
+    };
+  });
+}
+
+function renderCalendario(A){
+  const prox = A.upcoming.slice(0, 40);
+  const proxHTML = prox.map(t => {
+    const cls = t.estado === 'vencido' || t.estado === 'demorado' ? 'neg'
+              : t.estado === 'hoy' ? 'pos' : t.estado === 'pronto' ? '' : 'pos';
+    const label = t.estado === 'vencido' ? 'vencido'
+              : t.estado === 'demorado' ? `−${Math.abs(t.nextInDays)} d`
+              : t.estado === 'hoy' ? 'hoy'
+              : `en ${t.nextInDays} d`;
+    const badge = t.isManual ? ' <span class="pill p-mnl">manual</span>' : '';
+    return `<tr>
+      <td>${fdate(t.nextDate)}</td>
+      <td><span class="tk">${esc(t.ticker)}</span>${badge}<span class="nm">${esc(t.name)}</span></td>
+      <td>$${money(t.avg)}</td>
+      <td>${t.freq ? Math.round(t.freq)+' d' : '—'}</td>
+      <td class="${cls}">${label}</td>
+    </tr>`;
+  }).join('');
+
+  const top = A.tickers.filter(t => t.total > 0).slice(0, 18);
+  const monthKeys = A.monthly.map(m => m.key);
+  const cell = {};
+  A.credits.forEach(m => {
+    const k = `${m.date.getFullYear()}-${String(m.date.getMonth()+1).padStart(2,'0')}`;
+    cell[`${m.ticker}|${k}`] = (cell[`${m.ticker}|${k}`] || 0) + m.credito;
+  });
+  const maxCell = Math.max(1, ...Object.values(cell));
+
+  const hm = `
+    <div class="hm">
+      <table>
+        <thead><tr><th></th>${A.monthly.map(m => `<th>${m.label}</th>`).join('')}<th>Total</th></tr></thead>
+        <tbody>
+        ${top.map(t => `
+          <tr>
+            <td style="text-align:left;font-weight:700;color:var(--dim)">${esc(t.ticker)}</td>
+            ${monthKeys.map(k => {
+              const v = cell[`${t.ticker}|${k}`] || 0;
+              if(!v) return `<td style="color:#2a3a4d">·</td>`;
+              const a = 0.12 + 0.88 * Math.pow(v / maxCell, .55);
+              return `<td title="${t.ticker} ${k}: $${money(v)}" style="background:rgba(0,214,143,${a.toFixed(2)});color:${a>.55?'#04140e':'#bff5e0'}">${money(v)}</td>`;
+            }).join('')}
+            <td style="font-weight:700">$${money(t.total)}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
+
+  $('#view').innerHTML = `
+    <div class="grid g2b">
+      <div class="card">
+        <h3>Próximos pagos estimados</h3>
+        <div class="tw" style="max-height:520px">
+          <table>
+            <thead><tr><th>Fecha est.</th><th>CEDEAR</th><th>Monto esperado</th><th>Cadencia</th><th>Estado</th></tr></thead>
+            <tbody>${proxHTML || '<tr><td colspan="5" class="empty">Sin datos suficientes para proyectar</td></tr>'}</tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Mapa de calor · meses × activo</h3>
+        ${hm}
+      </div>
+    </div>`;
+}
+
+function renderSeguimiento(A){
+  const list = A.upcoming.slice(0, 30);
+  const alertsHTML = list.map(t => {
+    const d = t.nextInDays;
+    let cls = 'ok', diasTxt = '—';
+    if(t.estado === 'vencido' || t.estado === 'demorado'){
+      cls = 'due';
+      diasTxt = d < 0 ? `${Math.abs(d)}d tarde` : '—';
+    } else if(t.estado === 'hoy'){
+      cls = 'due'; diasTxt = 'HOY';
+    } else if(t.estado === 'pronto'){
+      cls = 'soon'; diasTxt = `${d}d`;
+    } else {
+      diasTxt = `${d}d`;
+    }
+    if(t.isManual) cls += ' manual';
+    const manualBadge = t.isManual ? ' <span class="pill p-mnl">manual</span>' : '';
+    return `
+      <div class="alertItem ${cls}">
+        <div class="ad">${d != null && d >= 0 ? d : '!'}<small>${d != null && d >= 0 ? 'días' : 'vencido'}</small></div>
+        <div class="am">
+          <b>${esc(t.ticker)}${manualBadge}</b>
+          ${esc(t.name || '')} · <span style="color:var(--dim2)">${fdate(t.nextDate)}</span>
+        </div>
+        <div class="ao">
+          <b>$${money(t.avg)}</b>
+          <small>${t.freq ? 'cada ' + Math.round(t.freq) + ' d' : 's/d'}</small>
+        </div>
+      </div>`;
+  }).join('');
+
+  const form = `
+    <form id="manualForm" class="manualForm" autocomplete="off">
+      <label>Ticker *
+        <input type="text" id="mfTicker" placeholder="AAPL" required maxlength="12" style="text-transform:uppercase">
+      </label>
+      <label>Nombre / emisor
+        <input type="text" id="mfName" placeholder="Apple Inc">
+      </label>
+      <label>Cadencia
+        <select id="mfCadence">
+          <option value="30">Mensual (~30 d)</option>
+          <option value="60">Bimestral (~60 d)</option>
+          <option value="90" selected>Trimestral (~90 d)</option>
+          <option value="180">Semestral (~180 d)</option>
+          <option value="365">Anual (~365 d)</option>
+          <option value="custom">Personalizada…</option>
+        </select>
+      </label>
+      <label id="mfCustomWrap" style="display:none">Días personalizados
+        <input type="number" id="mfCustom" min="1" max="3650" step="1" placeholder="45">
+      </label>
+      <label>Último pago
+        <input type="date" id="mfLastPay">
+      </label>
+      <label>Monto esperado
+        <input type="number" id="mfAmount" min="0" step="0.01" placeholder="0,00">
+      </label>
+      <label class="full">Notas
+        <input type="text" id="mfNotes" placeholder="Opcional…" maxlength="120">
+      </label>
+      <div class="submit full">
+        <button type="submit" class="btn primary">+ Agregar posición</button>
+      </div>
+    </form>`;
+
+  const manuales = Object.values(state.manual).sort((a,b)=>a.ticker.localeCompare(b.ticker));
+  const manualHTML = manuales.map(m => {
+    const lastPay = parseDate(m.lastPay);
+    const cad = +m.cadence || 0;
+    const next = (lastPay && cad) ? addDays(lastPay, cad) : null;
+    const dias = next ? daysBetween(new Date(), next) : null;
+    return `
+      <div class="alertItem manual">
+        <div class="ad">${dias != null && dias >= 0 ? dias : '!'}<small>${dias != null && dias >= 0 ? 'días' : 's/d'}</small></div>
+        <div class="am">
+          <b>${esc(m.ticker)}</b>
+          ${esc(m.name || '')} · <span style="color:var(--dim2)">cada ${cad} d</span>
+          ${next ? `<span style="color:var(--dim2)"> · próximo: ${fdate(next)}</span>` : ''}
+        </div>
+        <div class="ao">
+          <b>$${money(+m.amount || 0)}</b>
+          <small>${lastPay ? 'últ: ' + fdate(lastPay) : 'sin último pago'}</small>
+        </div>
+        <div class="ax">
+          <button class="ed" data-ed="${esc(m.ticker)}" title="Editar">✎</button>
+          <button data-del="${esc(m.ticker)}" title="Eliminar">✕</button>
+        </div>
+      </div>`;
+  }).join('');
+
+  const notifPerm = ('Notification' in window) ? Notification.permission : 'unsupported';
+  const notifEnabled = state.settings.alertsEnabled;
+  const notifUnsupported = notifPerm === 'unsupported';
+  const notifBlocked = notifPerm === 'denied';
+  const notifOk = notifPerm === 'granted';
+
+  const notifHTML = `
+    <div class="notifRow">
+      <div class="nl">Activar notificaciones
+        <small>${notifUnsupported ? 'Tu navegador no las soporta'
+          : notifBlocked ? 'Bloqueadas — habilitalas desde la barra de direcciones'
+          : notifOk ? 'Permiso concedido ✓'
+          : 'Se te pedirá permiso al activar'}</small>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="notifToggle" ${notifEnabled?'checked':''} ${notifUnsupported||notifBlocked?'disabled':''}>
+        <i></i>
+      </label>
+    </div>
+    <div class="notifRow">
+      <div class="nl">Avisar con anticipación
+        <small>Días previos a la fecha estimada</small>
+      </div>
+      <input type="number" id="notifDays" min="0" max="30" step="1" value="${state.settings.alertDaysBefore}" style="width:80px">
+    </div>
+    <div class="notifRow">
+      <div class="nl">Probar notificación
+        <small>Envía un aviso de ejemplo ahora</small>
+      </div>
+      <button class="btn" id="btnTestNotif" ${notifUnsupported||notifBlocked?'disabled':''}>Enviar prueba</button>
+    </div>`;
+
+  $('#view').innerHTML = `
+    <div class="grid g2b" style="margin-bottom:14px">
+      <div class="card">
+        <h3>Alertas y próximos pagos</h3>
+        <div class="alertRow">
+          ${alertsHTML || '<div class="empty">Sin próximos pagos. Cargá un extracto o una posición manual.</div>'}
+        </div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:14px">
+          <h3>Notificaciones</h3>
+          ${notifHTML}
+        </div>
+        <div class="card">
+          <h3>Estados</h3>
+          <div class="legend" style="flex-direction:column;gap:8px;margin:0">
+            <span><span class="pill p-due">vencido / hoy</span> fecha estimada pasada o es hoy</span>
+            <span><span class="pill p-soon">pronto</span> vence dentro del umbral configurado</span>
+            <span><span class="pill p-ok">programado</span> todavía falta</span>
+            <span><span class="pill p-mnl">manual</span> cargado por vos</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:14px">
+      <h3>Agregar CEDEAR al seguimiento</h3>
+      ${form}
+    </div>
+
+    <div class="card">
+      <h3>Posiciones en seguimiento (${manuales.length})</h3>
+      <div class="alertRow">
+        ${manualHTML || '<div class="empty">Todavía no cargaste posiciones manuales.</div>'}
+      </div>
+    </div>
+  `;
+
+  const cadSel = $('#mfCadence'), customWrap = $('#mfCustomWrap');
+  if(cadSel){
+    cadSel.onchange = () => {
+      customWrap.style.display = cadSel.value === 'custom' ? '' : 'none';
+    };
+  }
+  const mForm = $('#manualForm');
+  if(mForm){
+    mForm.onsubmit = e => {
+      e.preventDefault();
+      const tk = $('#mfTicker').value.trim().toUpperCase();
+      if(!tk){ toast('Ingresá un ticker', true); return; }
+      const cadV = cadSel.value;
+      const cadence = cadV === 'custom' ? (+$('#mfCustom').value || 0) : +cadV;
+      if(!cadence){ toast('Definí una cadencia válida', true); return; }
+      const lastPay = $('#mfLastPay').value;
+      const amount = parseFloat($('#mfAmount').value) || 0;
+      const name = $('#mfName').value.trim().toUpperCase();
+      const notes = $('#mfNotes').value.trim();
+      state.manual[tk] = { ticker:tk, name, cadence, lastPay, amount, notes };
+      persist();
+      render();
+      toast(`✓ ${tk} agregado al seguimiento`);
+    };
+  }
+  document.querySelectorAll('[data-del]').forEach(b => {
+    b.onclick = () => {
+      const tk = b.dataset.del;
+      if(!confirm(`¿Eliminar ${tk} del seguimiento?`)) return;
+      delete state.manual[tk];
+      persist(); render();
+      toast(`${tk} eliminado`);
+    };
+  });
+  document.querySelectorAll('[data-ed]').forEach(b => {
+    b.onclick = () => {
+      const tk = b.dataset.ed;
+      const m = state.manual[tk];
+      if(!m) return;
+      $('#mfTicker').value = m.ticker;
+      $('#mfName').value   = m.name || '';
+      const stdCads = [30,60,90,180,365];
+      if(stdCads.includes(+m.cadence)){
+        cadSel.value = String(m.cadence);
+        customWrap.style.display = 'none';
+      } else {
+        cadSel.value = 'custom';
+        customWrap.style.display = '';
+        $('#mfCustom').value = m.cadence;
+      }
+      $('#mfLastPay').value = m.lastPay || '';
+      $('#mfAmount').value  = m.amount || '';
+      $('#mfNotes').value   = m.notes || '';
+      mForm.scrollIntoView({ behavior:'smooth', block:'center' });
+    };
+  });
+  const tog = $('#notifToggle');
+  if(tog){
+    tog.onchange = async () => {
+      if(tog.checked){
+        const ok = await ensureNotifPermission();
+        if(!ok){ tog.checked = false; toast('Permiso de notificaciones denegado', true); return; }
+        state.settings.alertsEnabled = true;
+        state.settings.lastAlertKey = '';
+        persist();
+        toast('✓ Notificaciones activadas');
+        checkUpcomingAlerts(state.A);
+      } else {
+        state.settings.alertsEnabled = false;
+        persist();
+        toast('Notificaciones desactivadas');
+      }
+    };
+  }
+  const daysInp = $('#notifDays');
+  if(daysInp){
+    daysInp.onchange = () => {
+      state.settings.alertDaysBefore = clamp(parseInt(daysInp.value) || 3, 0, 30);
+      state.settings.lastAlertKey = '';
+      persist(); render();
+    };
+  }
+  const testBtn = $('#btnTestNotif');
+  if(testBtn){
+    testBtn.onclick = async () => {
+      const ok = await ensureNotifPermission();
+      if(!ok) return toast('Permiso denegado', true);
+      try{
+        new Notification('OMG DividendOS · Prueba', {
+          body: 'Si ves este mensaje, las notificaciones funcionan correctamente.',
+          icon: notifIcon()
+        });
+        toast('Notificación enviada');
+      }catch(e){ toast('No se pudo enviar', true); }
+    };
+  }
+}
+
+function renderPosiciones(A){
+  const h = state.holdings;
+  const rows = A.tickers.map(t => {
+    const pos = h[t.ticker] || {};
+    const qty = +pos.qty || 0;
+    const price = +pos.price || 0;
+    const cost = qty * price;
+    const yoc = cost > 0 ? t.runRate / cost : null;
+    const perCedear = qty > 0 ? t.runRate / qty : null;
+    const badge = t.isManual ? ' <span class="pill p-mnl">manual</span>' : '';
+    return `
+      <tr>
+        <td><span class="tk">${esc(t.ticker)}</span>${badge}<span class="nm">${esc(t.name)}</span></td>
+        <td><input type="number" min="0" step="1" data-t="${esc(t.ticker)}" data-f="qty" value="${qty || ''}" placeholder="0"></td>
+        <td><input type="number" min="0" step="0.01" data-t="${esc(t.ticker)}" data-f="price" value="${price || ''}" placeholder="0,00"></td>
+        <td>${perCedear != null ? '$' + money(perCedear) : '—'}</td>
+        <td>$${money(t.runRate)}</td>
+        <td class="${yoc != null ? 'pos' : ''}">${yoc != null ? pct1(yoc) : '—'}</td>
+        <td>${cost > 0 ? '$' + money(cost) : '—'}</td>
+      </tr>`;
+  }).join('');
+  const totalAnual = sum(A.tickers.map(t => (+(h[t.ticker]?.qty) || 0) > 0 ? t.runRate : 0));
+  const totalCosto = sum(A.tickers.map(t => (+(h[t.ticker]?.qty) || 0) * (+(h[t.ticker]?.price) || 0)));
+  const yocTotal = totalCosto > 0 ? totalAnual / totalCosto : null;
+
+  $('#view').innerHTML = `
+    <div class="kpis" style="margin-bottom:16px">
+      <div class="kpi"><label>Ingreso anual proyectado</label><b>$${money(totalAnual)}</b><small>según tenencias cargadas</small></div>
+      <div class="kpi b"><label>Costo de la posición</label><b>$${money(totalCosto)}</b><small>cantidad × precio promedio</small></div>
+      <div class="kpi p"><label>Yield on cost</label><b>${yocTotal != null ? pct1(yocTotal) : '—'}</b><small>renta anual / costo total</small></div>
+      <div class="kpi w"><label>Ingreso mensual estimado</label><b>$${money(totalAnual / 12)}</b><small>promedio</small></div>
+    </div>
+    <div class="card">
+      <h3>Tenencias (opcional) — ingresá cantidad y precio promedio de compra</h3>
+      <div class="tw" style="max-height:600px">
+        <table>
+          <thead><tr>
+            <th>CEDEAR</th><th>Cantidad</th><th>Precio prom.</th>
+            <th>Dividendo anual / CEDEAR</th><th>Ingreso anual est.</th>
+            <th>Yield on cost</th><th>Costo posición</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    </div>`;
+
+  document.querySelectorAll('#view input[data-t]').forEach(inp => {
+    inp.onchange = e => {
+      const tk = e.target.dataset.t, f = e.target.dataset.f;
+      state.holdings[tk] = state.holdings[tk] || { qty:0, price:0 };
+      state.holdings[tk][f] = parseFloat(e.target.value) || 0;
+      persist();
+      renderPosiciones(state.A);
+    };
+  });
+}
+
+function renderDatos(A){
+  const rows = [...A.movs].sort((a,b) => b.date - a.date);
+  const body = rows.map(m => `
+    <tr>
+      <td>${fdate(m.date)}</td>
+      <td><span class="tk">${esc(m.ticker)}</span><span class="nm">${esc(m.name)}</span></td>
+      <td style="text-align:left;color:var(--dim2);font-size:11px">${esc(m.tipo)}</td>
+      <td>${m.op ? esc(m.op) : '—'}</td>
+      <td>${m.debito ? '$' + money(m.debito) : '—'}</td>
+      <td class="${m.credito ? 'pos' : ''}">${m.credito ? '$' + money(m.credito) : '—'}</td>
+    </tr>`).join('');
+  $('#view').innerHTML = `
+    <div class="tools">
+      <span style="color:var(--dim2);font-size:12px">
+        ${A.movs.length} movimientos · ${A.credits.length} créditos · ${A.debits.length} débitos
+        ${A.meta.desde ? `· extracto ${A.meta.desde} → ${A.meta.hasta}` : ''}
+      </span>
+    </div>
+    <div class="tw" style="max-height:640px">
+      <table>
+        <thead><tr><th>Fecha</th><th>CEDEAR</th><th>Tipo</th><th>N° operación</th><th>Débito</th><th>Crédito</th></tr></thead>
+        <tbody>${body}</tbody>
+      </table>
+    </div>`;
+}
+
+/* =========================================================================
+   ESTADO
+   ========================================================================= */
+const state = {
+  movs: [], meta: {}, holdings: {},
+  manual: {},
+  settings: { alertsEnabled:false, alertDaysBefore:3, lastAlertKey:'' },
+  view: 'resumen', sort: { key:'total', dir:-1 }, q:'', A:null
+};
+
+function persist(){
+  saveVault({
+    meta: state.meta,
+    holdings: state.holdings,
+    manual: state.manual,
+    settings: state.settings,
+    movs: state.movs.map(m => ({ ...m, date: ymd(m.date) }))
+  });
+}
+
+function initApp(payload){
+  state.meta     = payload.meta || {};
+  state.holdings = payload.holdings || {};
+  state.manual   = payload.manual || {};
+  state.settings = Object.assign(
+    { alertsEnabled:false, alertDaysBefore:3, lastAlertKey:'' },
+    payload.settings || {}
+  );
+  state.movs = (payload.movs || []).map(m => ({ ...m, date: parseDate(m.date) })).filter(m => m.date);
+
+  if(state.movs.length || Object.keys(state.manual).length){
+    $('#drop').hidden = true;
+    $('#dash').hidden = false;
+    render();
+    $('#brandSub').textContent = `${state.movs.length} movimientos · ${new Set(state.movs.map(m=>m.ticker)).size} CEDEARs · ${Object.keys(state.manual).length} manuales`;
+  } else {
+    $('#drop').hidden = false;
+    $('#dash').hidden = true;
+    $('#brandSub').textContent = 'Panel de ingresos por dividendos · CEDEARs';
+  }
+}
+
+/* =========================================================================
+   EVENTOS
+   ========================================================================= */
+async function handleFile(file){
+  try{
+    toast('Procesando ' + file.name + '…');
+    const rows = await readFileRows(file);
+    const { meta, movs } = rowsToData(rows);
+    state.meta = meta;
+    state.movs = movs;
+    persist();
+    $('#drop').hidden = true;
+    $('#dash').hidden = false;
+    render();
+    $('#brandSub').textContent = `${movs.length} movimientos · ${new Set(movs.map(m => m.ticker)).size} CEDEARs · ${Object.keys(state.manual).length} manuales`;
+    toast(`✓ ${movs.length} movimientos · ${new Set(movs.map(m => m.ticker)).size} CEDEARs`);
+  }catch(err){
+    console.error(err);
+    toast(err.message || 'Error al procesar el archivo', true);
+  }
+}
+
+$('#file').addEventListener('change', e => {
+  const f = e.target.files[0];
+  if(f) handleFile(f);
+  e.target.value = '';
+});
+
+const drop = $('#drop');
+['dragenter','dragover'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+['dragleave','drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
+drop.addEventListener('drop', e => {
+  const f = e.dataTransfer.files[0];
+  if(f) handleFile(f);
+});
+window.addEventListener('dragover', e => e.preventDefault());
+window.addEventListener('drop', e => e.preventDefault());
+
+$('#tabs').addEventListener('click', e => {
+  const b = e.target.closest('button[data-v]');
+  if(!b) return;
+  state.view = b.dataset.v;
+  document.querySelectorAll('#tabs button').forEach(x => x.classList.toggle('on', x === b));
+  render();
+});
+
+$('#btnBell').addEventListener('click', () => {
+  const tab = [...document.querySelectorAll('#tabs button')].find(b => b.dataset.v === 'seguimiento');
+  if(tab){ tab.click(); }
+});
+
+$('#btnExport').addEventListener('click', () => {
+  if(!state.movs.length) return toast('No hay datos para exportar', true);
+  const head = ['Fecha','Ticker','Emisor','Tipo','Nro Operacion','Debito','Credito'];
+  const lines = [head.join(';')];
+  [...state.movs].sort((a,b) => a.date - b.date).forEach(m => {
+    lines.push([fdate(m.date), m.ticker, m.name, m.tipo, m.op || '',
+                String(m.debito).replace('.',','), String(m.credito).replace('.',',')].join(';'));
+  });
+  const blob = new Blob(['\ufeff' + lines.join('\n')], { type:'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `dividendos_${ymd(new Date())}.csv`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast('CSV exportado');
+});
+
+const helpModal = $('#helpModal');
+function openHelp(){ helpModal.classList.add('on'); }
+function closeHelp(){ helpModal.classList.remove('on'); }
+$('#btnHelp').addEventListener('click', openHelp);
+$('#dropHelp').addEventListener('click', e => { e.preventDefault(); openHelp(); });
+$('#helpClose').addEventListener('click', closeHelp);
+helpModal.addEventListener('click', e => { if(e.target === helpModal) closeHelp(); });
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeHelp(); });
+
+/* =========================================================================
+   ÍCONO OMG
+   ========================================================================= */
+const ICON_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="og" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#00d68f"/>
+      <stop offset="1" stop-color="#3b82f6"/>
+    </linearGradient>
+    <linearGradient id="obg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#101a26"/>
+      <stop offset="1" stop-color="#070c12"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#obg)"/>
+  <circle cx="256" cy="256" r="182" fill="none" stroke="url(#og)" stroke-width="16" opacity="0.9"/>
+  <text x="256" y="308" font-family="Arial,Helvetica,sans-serif" font-size="168" font-weight="900"
+        text-anchor="middle" fill="url(#og)" letter-spacing="-10">OMG</text>
+  <circle cx="392" cy="128" r="46" fill="#00d68f"/>
+  <text x="392" y="146" font-family="Arial,Helvetica,sans-serif" font-size="54" font-weight="900"
+        text-anchor="middle" fill="#04140e">$</text>
+  <path d="M120 400 L180 360 L240 385 L310 330 L392 380"
+        fill="none" stroke="#00d68f" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" opacity="0.45"/>
+</svg>`;
+
+$('#lockLogo').innerHTML = ICON_SVG;
+$('#brandLogo').innerHTML = ICON_SVG;
+
+/* =========================================================================
+   PWA + INIT
+   ========================================================================= */
+(function pwa(){
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  }
+})();
+
+(function boot(){
+  if(!window.crypto?.subtle){
+    lockErr.textContent = 'Tu navegador no soporta cifrado AES. Usá Chrome, Edge o Firefox actualizado.';
+    lockBtn.disabled = true;
+    return;
+  }
+  showLock();
+})();
+
+setInterval(() => {
+  if(sessionKey && state.A) checkUpcomingAlerts(state.A);
+}, 30 * 60 * 1000);
+
+/* =========================================================================
+   INSTALACIÓN PWA
+   ========================================================================= */
+let deferredPrompt = null;
+
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+                  || window.navigator.standalone === true;
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+const isIOSSafari = isIOS
+  && /Safari/.test(navigator.userAgent)
+  && !/CriOS|FxiOS|EdgiOS|OPiOS/.test(navigator.userAgent);
+
+function showInstallBtn(){
+  if(isStandalone) return;
+  $('#btnInstall').classList.add('on');
+  if(!localStorage.getItem('omg.install.dismissed')){
+    $('#installBanner').classList.add('on');
+  }
+}
+function hideInstallUI(){
+  $('#btnInstall').classList.remove('on');
+  $('#installBanner').classList.remove('on');
+}
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  showInstallBtn();
+});
+
+window.addEventListener('appinstalled', () => {
+  deferredPrompt = null;
+  hideInstallUI();
+  localStorage.setItem('omg.install.dismissed', '1');
+  toast('✓ OMG DividendOS instalada');
+});
+
+async function triggerInstall(){
+  if(deferredPrompt){
+    deferredPrompt.prompt();
+    try{
+      const { outcome } = await deferredPrompt.userChoice;
+      if(outcome === 'accepted'){
+        hideInstallUI();
+        localStorage.setItem('omg.install.dismissed', '1');
+      }
+    }catch(e){}
+    deferredPrompt = null;
+    return;
+  }
+  showIOSGuide();
+}
+
+function showIOSGuide(){
+  const m = $('#helpModal');
+  const body = m.querySelector('.modalBody');
+  const original = body.innerHTML;
+
+  body.innerHTML = `
+    <h4 style="margin-top:0">📲 Instalar en iPhone / iPad</h4>
+    <div class="ios-guide">
+      <p>Safari no expone un prompt de instalación como Chrome/Edge. Tenés que hacerlo manualmente:</p>
+      <ol>
+        <li>Tocá el botón <span class="ico">Compartir</span> en la barra inferior de Safari (el cuadrado con la flecha hacia arriba).</li>
+        <li>Deslizá y elegí <b>“Añadir a pantalla de inicio”</b>.</li>
+        <li>Confirmá el nombre <b>OMG DividendOS</b> y tocá <b>Añadir</b>.</li>
+        <li>Listo: el ícono aparece en tu home como una app nativa.</li>
+      </ol>
+      <p style="margin-top:14px;color:#8ba0b8;font-size:12.5px">
+        <b>Nota:</b> solo funciona desde Safari. Si abriste la app desde Chrome, Firefox u otro navegador en iOS, el sistema no permite instalar PWAs.
+      </p>
+    </div>
+    <div style="margin-top:20px;display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn primary" id="iosGuideClose">Entendido</button>
+    </div>
+  `;
+  m.classList.add('on');
+
+  const closeBtn = body.querySelector('#iosGuideClose');
+  const restore = () => {
+    m.classList.remove('on');
+    body.innerHTML = original;
+  };
+  closeBtn.addEventListener('click', restore);
+}
+
+$('#btnInstall').addEventListener('click', triggerInstall);
+$('#btnInstallBanner').addEventListener('click', triggerInstall);
+$('#btnInstallClose').addEventListener('click', () => {
+  $('#installBanner').classList.remove('on');
+  localStorage.setItem('omg.install.dismissed', '1');
+});
+
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    if(isIOSSafari && !isStandalone
+       && !localStorage.getItem('omg.install.dismissed')){
+      $('#btnInstall').classList.add('on');
+      $('#installBanner').classList.add('on');
+    }
+  }, 1500);
+});
+</script>
+</body>
+</html>

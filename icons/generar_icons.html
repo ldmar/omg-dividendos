@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>OMG DividendOS · Generador de íconos</title>
+<style>
+  body{margin:0;min-height:100vh;background:#0a0e13;color:#e8eff7;font:14px/1.6 system-ui,sans-serif;display:grid;place-items:center;padding:30px}
+  .wrap{max-width:760px;width:100%}
+  h1{font-size:22px;letter-spacing:-.5px;margin-bottom:6px}
+  h1 b{color:#00d68f}
+  p{color:#8ba0b8;font-size:13px;margin-bottom:20px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:14px;margin-bottom:22px}
+  .item{background:#121a25;border:1px solid #1e2b3b;border-radius:12px;padding:12px;text-align:center}
+  .item canvas{display:block;width:100%;height:auto;border-radius:8px;margin-bottom:8px;background:#0a0e13}
+  .item small{display:block;color:#5f7691;font-size:11px;margin-bottom:6px}
+  .item button{background:#0d141d;border:1px solid #1e2b3b;color:#e8eff7;padding:6px 10px;border-radius:8px;font-size:11px;cursor:pointer;font-weight:600;width:100%;transition:.15s}
+  .item button:hover{border-color:#00d68f;color:#00d68f}
+  .actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+  .actions button{padding:12px 22px;border-radius:10px;border:0;background:linear-gradient(135deg,#00d68f,#0a9e70);color:#04140e;font-weight:700;cursor:pointer;font-size:13.5px;box-shadow:0 6px 20px #00d68f33}
+  .actions button.sec{background:#121a25;color:#e8eff7;border:1px solid #1e2b3b;box-shadow:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1><b>OMG</b> DividendOS · Generador de íconos</h1>
+  <p>Descargá cada PNG y guardalo en la carpeta <code>icons/</code> del repo, con el nombre exacto que aparece abajo.</p>
+  <div class="grid" id="grid"></div>
+  <div class="actions">
+    <button id="all">↓ Descargar todos</button>
+    <button class="sec" id="zipInfo">ℹ️ Cómo empaquetarlos</button>
+  </div>
+</div>
+
+<script>
+const SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="og" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#00d68f"/>
+      <stop offset="1" stop-color="#3b82f6"/>
+    </linearGradient>
+    <linearGradient id="obg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#101a26"/>
+      <stop offset="1" stop-color="#070c12"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#obg)"/>
+  <circle cx="256" cy="256" r="182" fill="none" stroke="url(#og)" stroke-width="16" opacity="0.9"/>
+  <text x="256" y="308" font-family="Arial,Helvetica,sans-serif" font-size="168" font-weight="900"
+        text-anchor="middle" fill="url(#og)" letter-spacing="-10">OMG</text>
+  <circle cx="392" cy="128" r="46" fill="#00d68f"/>
+  <text x="392" y="146" font-family="Arial,Helvetica,sans-serif" font-size="54" font-weight="900"
+        text-anchor="middle" fill="#04140e">$</text>
+  <path d="M120 400 L180 360 L240 385 L310 330 L392 380"
+        fill="none" stroke="#00d68f" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" opacity="0.45"/>
+</svg>`;
+
+const ICONS = [
+  { name:'icon-72.png',           size:72,  mask:false },
+  { name:'icon-96.png',           size:96,  mask:false },
+  { name:'icon-128.png',          size:128, mask:false },
+  { name:'icon-144.png',          size:144, mask:false },
+  { name:'icon-152.png',          size:152, mask:false },
+  { name:'icon-192.png',          size:192, mask:false },
+  { name:'icon-384.png',          size:384, mask:false },
+  { name:'icon-512.png',          size:512, mask:false },
+  { name:'icon-maskable-192.png', size:192, mask:true  },
+  { name:'icon-maskable-512.png', size:512, mask:true  },
+  { name:'apple-touch-icon.png',  size:180, mask:false }
+];
+
+const svgBlob = new Blob([SVG], { type:'image/svg+xml' });
+const svgURL = URL.createObjectURL(svgBlob);
+const img = new Image();
+
+img.onload = () => {
+  const grid = document.getElementById('grid');
+  ICONS.forEach(cfg => {
+    const card = document.createElement('div');
+    card.className = 'item';
+    const canvas = document.createElement('canvas');
+    canvas.width = canvas.height = cfg.size;
+    const ctx = canvas.getContext('2d');
+
+    if(cfg.mask){
+      // Maskable: fondo lleno + logo al 80% del área segura (safe zone = 80%)
+      ctx.fillStyle = '#0a0e13';
+      ctx.fillRect(0, 0, cfg.size, cfg.size);
+      const inner = cfg.size * 0.8;
+      const off = (cfg.size - inner) / 2;
+      ctx.drawImage(img, off, off, inner, inner);
+    } else {
+      ctx.drawImage(img, 0, 0, cfg.size, cfg.size);
+    }
+
+    card.appendChild(canvas);
+    const lbl = document.createElement('small');
+    lbl.textContent = `${cfg.name} · ${cfg.size}×${cfg.size}`;
+    card.appendChild(lbl);
+
+    const btn = document.createElement('button');
+    btn.textContent = 'Descargar';
+    btn.onclick = () => downloadCanvas(canvas, cfg.name);
+    card.appendChild(btn);
+
+    grid.appendChild(card);
+    card._canvas = canvas;
+    card._name = cfg.name;
+  });
+};
+
+img.src = svgURL;
+
+function downloadCanvas(canvas, filename){
+  canvas.toBlob(blob => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 400);
+  }, 'image/png');
+}
+
+document.getElementById('all').onclick = () => {
+  const cards = document.querySelectorAll('.item');
+  cards.forEach((card, i) => {
+    setTimeout(() => downloadCanvas(card._canvas, card._name), i * 250);
+  });
+};
+
+document.getElementById('zipInfo').onclick = () => {
+  alert(
+    'Los archivos se descargan individualmente.\n\n' +
+    'Si querés empaquetarlos:\n' +
+    '1. Guardá todos los PNG en una carpeta "icons/"\n' +
+    '2. Comprimila como ZIP si necesitás moverla\n' +
+    '3. Subila a la raíz del repositorio en GitHub\n\n' +
+    'También podés hacer commit directo desde la web de GitHub.'
+  );
+};
+</script>
+</body>
+</html>

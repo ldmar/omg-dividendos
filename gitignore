@@ -1,0 +1,28 @@
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editores
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Node (por si agregás tooling)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Builds temporales
+dist/
+build/
+*.log
+
+# Datos locales de prueba
+extracto_*.xlsx
+extracto_*.csv
+dividendos_*.csv
+!icons/generate.html
