@@ -9,7 +9,7 @@
     <img alt="Sin servidor" src="https://img.shields.io/badge/backend-ninguno-8ba0b8?style=flat-square" />
     <img alt="Licencia MIT" src="https://img.shields.io/badge/licencia-MIT-00d68f?style=flat-square" />
   </p>
-  <p><i>Realizado por <b>Ohmygoch</b> · v2.2</i></p>
+  <p><i>Realizado por <b>Ohmygoch</b> · v2.3</i></p>
 </div>
 
 ---
@@ -17,6 +17,7 @@
 ## ✨ Características
 
 - 🧠 **Parser inteligente de extractos** — arrastrás un `.xlsx`/`.csv` de tu broker (IOL, Balanz, Rava, PPI, Cocos, Bull Market…) y la app detecta fechas, tickers, número de operación, importes y emisores automáticamente.
+- 🗂️ **Historial acumulativo** — cargá varios extractos sin perder los anteriores. La app fusiona los movimientos por N° de operación (o por fecha + ticker + monto) y omite los duplicados.
 - 📊 **Métricas profesionales por CEDEAR** — total cobrado, promedio, mediana, coeficiente de variación, cadencia entre pagos, pagos por año, run-rate a 12 meses, consistencia y fecha estimada del próximo pago.
 - 📈 **Diversificación** — índice Herfindahl (HHI), fuentes efectivas de ingreso y detección de concentración.
 - 🔍 **Detección de pagos atípicos** — z-score por ticker para identificar dividendos extraordinarios o errores de carga.
@@ -71,7 +72,19 @@ Arrastrá el archivo sobre la pantalla principal o usá **Cargar extracto**. La 
 | `Débito` | Importe debitado (suele ser 0) | `0,00` |
 | `Crédito` | Importe acreditado (**el que se analiza**) | `6,50` |
 
-### 4. Seguimiento manual
+### 4. Cargar varios extractos (historial acumulativo)
+
+Cuando subís un archivo nuevo, la app **NO borra** los movimientos anteriores. Los **fusiona**:
+
+- **Movimiento nuevo** → se agrega al historial.
+- **Movimiento ya existente** → se omite. Se identifica por **N° de operación**; si el extracto no lo trae, por combinación de **fecha + ticker + monto**.
+- **Rango de fechas** → se conserva el más amplio entre todos los extractos cargados.
+
+**Ejemplo:** si cargás `ene–jun` y después `jul–dic`, tu historial queda con **12 meses completos**. Si volvés a cargar el primero, no se duplica nada.
+
+> 💡 Para **borrar todo** y empezar de cero, usá el botón 🗑 del encabezado. Pide **doble confirmación** y conserva tu contraseña.
+
+### 5. Seguimiento manual
 
 En la pestaña **Seguimiento** podés cargar CEDEARs que ya tenés en cartera y no aparezcan en el extracto:
 
@@ -79,7 +92,7 @@ En la pestaña **Seguimiento** podés cargar CEDEARs que ya tenés en cartera y 
 - La app calcula la **próxima fecha estimada** y la cruza con el calendario y las alertas.
 - Si un pago se atrasa más de 7 días, aparece marcado como **vencido** en rojo — ideal para reclamarle a tu broker.
 
-### 5. Alertas
+### 6. Alertas
 
 Activá las **notificaciones del navegador**, definí cuántos días antes querés que te avise y probá el sistema con el botón de test. Las notificaciones se disparan mientras la app esté abierta en alguna pestaña.
 
@@ -197,7 +210,7 @@ Pull requests bienvenidos con tests manuales documentados.
 
 **Ohmygoch**
 
-- GitHub: [@ldmar](https://github.com/ldmar)
+- GitHub: [@ohmygoch](https://github.com/ohmygoch)
 
 ---
 

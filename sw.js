@@ -1,5 +1,5 @@
-/* OMG DividendOS · Service Worker · by Ohmygoch */
-const CACHE = 'omg-dividendos-v2.2';
+/* OMG DividendOS · Service Worker · by Ohmygoch · v2.3 */
+const CACHE = 'omg-dividendos-v2.3';
 const ASSETS = [
   './',
   './index.html',

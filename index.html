@@ -300,8 +300,6 @@
   .notifRow .nl small{display:block;color:var(--dim2);font-weight:400;font-size:11.5px;margin-top:2px}
   .btn.ghost.danger{color:var(--dim)}
   .btn.ghost.danger:hover{color:var(--dang);border-color:#3a1f22;background:#1a0e10}
-
-  /* --- install UI --- */
   .installBanner{
     display:none;align-items:center;gap:14px;padding:14px 18px;
     background:linear-gradient(135deg,#0d3a2b,#0a2540);
@@ -319,7 +317,6 @@
   .ios-guide ol{margin:8px 0 8px 20px}
   .ios-guide li{margin:6px 0}
   .ios-guide .ico{display:inline-block;padding:2px 7px;border-radius:5px;background:#0a1219;border:1px solid #1e2b3b;font-size:12px;color:#7ee8c0;font-family:ui-monospace,monospace}
-
   @media(max-width:640px){
     main{padding:14px}
     .kpi b{font-size:20px}
@@ -350,7 +347,7 @@
       <button type="submit" class="btn primary" id="lockBtn">Desbloquear</button>
     </form>
     <div class="lockErr" id="lockErr"></div>
-    <div class="lockFoot">Realizado por <b>Ohmygoch</b> · v2.2</div>
+    <div class="lockFoot">Realizado por <b>Ohmygoch</b> · v2.3</div>
   </div>
 </div>
 
@@ -409,7 +406,7 @@
   </section>
 
   <footer class="foot">
-    Realizado por <b>Ohmygoch</b><span class="ver">v2.2</span>
+    Realizado por <b>Ohmygoch</b><span class="ver">v2.3</span>
   </footer>
 </main>
 
@@ -450,7 +447,18 @@
         <li><b>Metadatos:</b> las filas con “Fecha Actual”, “Hora Actual” o “Intervalo de Consulta” se saltan.</li>
       </ul>
 
-      <h4>4 · Seguimiento de CEDEARs que no están en el extracto</h4>
+      <h4>4 · Cargar varios extractos (historial acumulativo)</h4>
+      <p>Cuando cargás un archivo nuevo, la app <b>NO borra los movimientos anteriores</b>. Los fusiona inteligentemente:</p>
+      <ul>
+        <li><b>Movimiento nuevo</b> → se agrega al historial.</li>
+        <li><b>Movimiento ya existente</b> → se omite. La app lo identifica por el <b>N° de operación</b>; si el extracto no lo trae, por combinación de <b>fecha + ticker + monto</b>.</li>
+        <li><b>Rango de fechas</b> → se conserva el más amplio entre todos los extractos cargados.</li>
+      </ul>
+      <div class="note">
+        <b>Ejemplo:</b> si cargás el extracto de <i>enero–junio</i> y después el de <i>julio–diciembre</i>, tu historial queda con los <b>12 meses completos</b>. Si volvés a cargar el primero, no se duplica nada.
+      </div>
+
+      <h4>5 · Seguimiento de CEDEARs que no están en el extracto</h4>
       <p>En la pestaña <b>Seguimiento</b> podés agregar manualmente cualquier CEDEAR que ya tengas en cartera y no aparezca en el extracto descargado. Solo necesitás:</p>
       <ul>
         <li><b>Ticker</b> (obligatorio).</li>
@@ -460,7 +468,7 @@
       </ul>
       <p>Con esos datos, la app calcula la <b>próxima fecha estimada</b> y la muestra en el calendario y en el panel de alertas. Así podés cruzar con tu broker y detectar si <b>dejó de pagar</b> un dividendo (aparece como <i>“vencido”</i>).</p>
 
-      <h4>5 · Notificaciones</h4>
+      <h4>6 · Notificaciones</h4>
       <ul>
         <li>Activá las <b>notificaciones del navegador</b> (te pide permiso una vez).</li>
         <li>Definí cuántos <b>días antes</b> querés que te avise (por defecto 3).</li>
@@ -469,17 +477,17 @@
       </ul>
       <div class="note">Las notificaciones se disparan <b>mientras la app está abierta</b>. La deduplicación diaria evita que te notifique varias veces el mismo día por el mismo pago.</div>
 
-      <h4>6 · Seguridad y contraseña</h4>
+      <h4>7 · Seguridad y contraseña</h4>
       <p>Todos tus datos se guardan <b>cifrados con AES-256-GCM</b>. La contraseña <b>nunca se almacena</b>: solo un hash derivado con PBKDF2 (150.000 iteraciones).</p>
       <div class="warn"><b>Si olvidás la contraseña, los datos no se recuperan.</b> Usá el botón <b>🔒</b> para bloquear la sesión cuando quieras.</div>
 
-      <h4>7 · Botón 🗑 (Limpiar)</h4>
+      <h4>8 · Botón 🗑 (Limpiar)</h4>
       <p>Elimina <b>todos los datos cargados</b> (extracto, posiciones manuales, tenencias y alertas) pero conserva tu contraseña. Pide <b>doble confirmación</b> antes de borrar.</p>
 
-      <h4>8 · Instalar la app</h4>
+      <h4>9 · Instalar la app</h4>
       <p>En <b>Android (Chrome/Edge)</b> aparece un botón <b>“⬇ Instalar app”</b> en el encabezado. En <b>iPhone/iPad</b> tocá <b>Compartir → Añadir a pantalla de inicio</b> desde Safari. En <b>escritorio</b> usá el ícono de instalación en la barra de direcciones.</p>
 
-      <h4>9 · Sobre la app</h4>
+      <h4>10 · Sobre la app</h4>
       <p><b>OMG DividendOS</b> es una PWA de análisis de dividendos de CEDEARs. Realizada por <b style="color:var(--acc)">Ohmygoch</b>. Todo el procesamiento es 100% local — ningún dato viaja a internet.</p>
     </div>
   </div>
@@ -490,8 +498,10 @@
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script>
 /* =========================================================================
-   OMG DividendOS · by Ohmygoch · v2.2
-   Fix: parseDate ISO + botón Limpiar + instalación PWA
+   OMG DividendOS · by Ohmygoch · v2.3
+   Novedades:
+   · Fusión inteligente de extractos (historial acumulativo, sin duplicados)
+   · Fix parseDate ISO + botón Limpiar + instalación PWA
    ========================================================================= */
 
 const $  = s => document.querySelector(s);
@@ -533,20 +543,18 @@ function toast(msg, isErr){
 }
 
 /* =========================================================================
-   PARSER DE FECHAS — CORREGIDO
+   PARSER DE FECHAS
    ========================================================================= */
 function parseDate(v){
   if(v instanceof Date && !isNaN(v)) return new Date(v.getFullYear(), v.getMonth(), v.getDate());
   const s = String(v ?? '').trim();
 
-  // 1) ISO estricto YYYY-MM-DD (con o sin hora)
   let m = s.match(/^(\d{4})-(\d{2})-(\d{2})(?:[T\s].*)?$/);
   if(m){
     const d = new Date(+m[1], +m[2]-1, +m[3]);
     return isNaN(d) ? null : d;
   }
 
-  // 2) DD/MM/YYYY con separadores / - .
   m = s.match(/(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})/);
   if(!m) return null;
   let y = +m[3]; if(y < 100) y += 2000;
@@ -694,7 +702,7 @@ $('#btnReset').addEventListener('click', async () => {
   const ok1 = confirm(
     '⚠️ LIMPIAR DATOS · Paso 1 de 2\n\n' +
     'Se borrará TODO lo siguiente:\n\n' +
-    '  · Extracto de movimientos\n' +
+    '  · Extracto de movimientos (todo el historial)\n' +
     '  · Posiciones manuales en seguimiento\n' +
     '  · Tenencias y precios cargados\n' +
     '  · Configuración de alertas\n\n' +
@@ -1683,15 +1691,70 @@ async function handleFile(file){
   try{
     toast('Procesando ' + file.name + '…');
     const rows = await readFileRows(file);
-    const { meta, movs } = rowsToData(rows);
-    state.meta = meta;
-    state.movs = movs;
+    const { meta, movs: nuevos } = rowsToData(rows);
+
+    /* ----------------------------------------------------------------
+       FUSIÓN INTELIGENTE
+       · Clave única: NRO OPERACION si existe → si no: fecha|ticker|monto
+       · Si la clave ya existe → se OMITE (no se duplica)
+       · Si es nueva → se AGREGA al historial existente
+       · NUNCA se borran los movimientos previos
+       ---------------------------------------------------------------- */
+    const keyOf = m => m.id || `${ymd(m.date)}|${m.ticker}|${Number(m.credito).toFixed(2)}`;
+
+    const claves = new Set(state.movs.map(keyOf));
+    const merged = [...state.movs];
+    let agregados = 0, duplicados = 0;
+
+    nuevos.forEach(m => {
+      const k = keyOf(m);
+      if(claves.has(k)){ duplicados++; return; }
+      claves.add(k);
+      merged.push(m);
+      agregados++;
+    });
+
+    // Orden ascendente por fecha (los cálculos lo esperan así)
+    merged.sort((a,b) => a.date - b.date);
+    state.movs = merged;
+
+    /* ----------------------------------------------------------------
+       MERGE DE METADATOS
+       Conserva el rango MÁS AMPLIO entre el extracto anterior y el nuevo
+       ---------------------------------------------------------------- */
+    const md = state.meta || {};
+    if(meta.desde){
+      const prev = parseDate(md.desde), curr = parseDate(meta.desde);
+      if(!prev || (curr && curr < prev)) md.desde = meta.desde;
+    }
+    if(meta.hasta){
+      const prev = parseDate(md.hasta), curr = parseDate(meta.hasta);
+      if(!prev || (curr && curr > prev)) md.hasta = meta.hasta;
+    }
+    if(meta.fechaActual) md.fechaActual = meta.fechaActual;
+    if(meta.horaActual)  md.horaActual  = meta.horaActual;
+    state.meta = md;
+
     persist();
     $('#drop').hidden = true;
     $('#dash').hidden = false;
     render();
-    $('#brandSub').textContent = `${movs.length} movimientos · ${new Set(movs.map(m => m.ticker)).size} CEDEARs · ${Object.keys(state.manual).length} manuales`;
-    toast(`✓ ${movs.length} movimientos · ${new Set(movs.map(m => m.ticker)).size} CEDEARs`);
+
+    const nTickers = new Set(state.movs.map(m => m.ticker)).size;
+    const nManual  = Object.keys(state.manual).length;
+    $('#brandSub').textContent =
+      `${state.movs.length} movimientos · ${nTickers} CEDEARs · ${nManual} manuales`;
+
+    // Mensaje según el resultado
+    if(agregados === 0 && duplicados > 0){
+      toast(`Sin novedades · ${duplicados} movimiento${duplicados>1?'s':''} ya estaba${duplicados>1?'n':''} en el historial`);
+    } else if(agregados > 0 && duplicados > 0){
+      toast(`✓ +${agregados} nuevos · ${duplicados} duplicado${duplicados>1?'s':''} omitido${duplicados>1?'s':''}`);
+    } else if(agregados > 0){
+      toast(`✓ +${agregados} movimiento${agregados>1?'s':''} agregado${agregados>1?'s':''} al historial`);
+    } else {
+      toast('El archivo no contenía movimientos nuevos');
+    }
   }catch(err){
     console.error(err);
     toast(err.message || 'Error al procesar el archivo', true);
