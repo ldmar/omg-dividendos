@@ -8,21 +8,18 @@
 <meta name="author" content="Ohmygoch" />
 <meta name="color-scheme" content="dark" />
 
-<!-- iOS / Safari -->
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="OMG DividendOS" />
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
 <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png" />
 
-<!-- Android / PWA -->
 <link rel="manifest" href="manifest.json" />
 <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-96.png" />
 <link rel="icon" type="image/png" sizes="16x16" href="icons/icon-72.png" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="application-name" content="OMG DividendOS" />
 
-<!-- Open Graph -->
 <meta property="og:title" content="OMG DividendOS" />
 <meta property="og:description" content="Panel PWA para analizar y seguir dividendos de CEDEARs. 100% local, cifrado, sin servidores." />
 <meta property="og:type" content="website" />
@@ -153,6 +150,7 @@
   .p-hi{background:#0d3a2b;color:#3ee0a6} .p-md{background:#3a3010;color:#fbbf24} .p-lo{background:#3a1a1a;color:#f87171}
   .p-mnl{background:#241a3a;color:#c4a8ff} .p-due{background:#3a1a1a;color:#f87171}
   .p-soon{background:#3a3010;color:#fbbf24} .p-ok{background:#0d3a2b;color:#3ee0a6}
+  .est{color:var(--dim2);font-style:italic}
   .pos{color:var(--acc);font-weight:700}
   .neg{color:var(--dang);font-weight:700}
   .ins{display:flex;flex-direction:column;gap:9px}
@@ -347,7 +345,7 @@
       <button type="submit" class="btn primary" id="lockBtn">Desbloquear</button>
     </form>
     <div class="lockErr" id="lockErr"></div>
-    <div class="lockFoot">Realizado por <b>Ohmygoch</b> · v2.3</div>
+    <div class="lockFoot">Realizado por <b>Ohmygoch</b> · v2.5</div>
   </div>
 </div>
 
@@ -406,7 +404,7 @@
   </section>
 
   <footer class="foot">
-    Realizado por <b>Ohmygoch</b><span class="ver">v2.3</span>
+    Realizado por <b>Ohmygoch</b><span class="ver">v2.5</span>
   </footer>
 </main>
 
@@ -447,47 +445,56 @@
         <li><b>Metadatos:</b> las filas con “Fecha Actual”, “Hora Actual” o “Intervalo de Consulta” se saltan.</li>
       </ul>
 
-      <h4>4 · Cargar varios extractos (historial acumulativo)</h4>
+      <h4>4 · Cadencia y próximo pago estimado</h4>
+      <p>La app calcula la cadencia entre pagos con el intervalo promedio observado. Cuando solo hay <b>1 pago registrado</b> para un CEDEAR, no hay suficiente información para calcularla, así que recurre a un <b>diccionario de cadencias conocidas</b> de los CEDEARs más populares:</p>
+      <ul>
+        <li><b>Trimestrales (~90 d):</b> AAPL, MSFT, KO, PEP, JNJ, V, WMT, MCD, IBM, CVX, etc.</li>
+        <li><b>Semestrales (~180 d):</b> PBR, VALE, ITUB, BBD, etc.</li>
+        <li><b>Anuales (~365 d):</b> BABA, TSM, JOYY, etc.</li>
+      </ul>
+      <p>Cuando se usa el diccionario, la fecha estimada aparece con un <b>~</b> y la cadencia se muestra como <i>~90 d</i> para que sepas que es una <b>estimación aproximada</b>, no un cálculo basado en tu historial.</p>
+      <div class="note">
+        <b>Para mayor precisión:</b> cargá al menos 2 pagos del mismo CEDEAR, o usá la pestaña <b>Seguimiento</b> para definir manualmente la cadencia y el último pago.
+      </div>
+
+      <h4>5 · Cargar varios extractos (historial acumulativo)</h4>
       <p>Cuando cargás un archivo nuevo, la app <b>NO borra los movimientos anteriores</b>. Los fusiona inteligentemente:</p>
       <ul>
         <li><b>Movimiento nuevo</b> → se agrega al historial.</li>
         <li><b>Movimiento ya existente</b> → se omite. La app lo identifica por el <b>N° de operación</b>; si el extracto no lo trae, por combinación de <b>fecha + ticker + monto</b>.</li>
         <li><b>Rango de fechas</b> → se conserva el más amplio entre todos los extractos cargados.</li>
       </ul>
-      <div class="note">
-        <b>Ejemplo:</b> si cargás el extracto de <i>enero–junio</i> y después el de <i>julio–diciembre</i>, tu historial queda con los <b>12 meses completos</b>. Si volvés a cargar el primero, no se duplica nada.
-      </div>
 
-      <h4>5 · Seguimiento de CEDEARs que no están en el extracto</h4>
+      <h4>6 · Seguimiento de CEDEARs que no están en el extracto</h4>
       <p>En la pestaña <b>Seguimiento</b> podés agregar manualmente cualquier CEDEAR que ya tengas en cartera y no aparezca en el extracto descargado. Solo necesitás:</p>
       <ul>
         <li><b>Ticker</b> (obligatorio).</li>
-        <li><b>Cadencia</b>: cada cuánto paga (mensual, bimestral, trimestral, semestral, anual o personalizada en días).</li>
-        <li><b>Último pago</b>: fecha en que tu broker te acreditó el último dividendo.</li>
-        <li><b>Monto esperado</b> (opcional): para ver la proyección de renta.</li>
+        <li><b>Cadencia</b>: cada cuánto paga.</li>
+        <li><b>Último pago</b>: fecha del último dividendo.</li>
+        <li><b>Monto esperado</b> (opcional).</li>
       </ul>
-      <p>Con esos datos, la app calcula la <b>próxima fecha estimada</b> y la muestra en el calendario y en el panel de alertas. Así podés cruzar con tu broker y detectar si <b>dejó de pagar</b> un dividendo (aparece como <i>“vencido”</i>).</p>
 
-      <h4>6 · Notificaciones</h4>
+      <h4>7 · Notificaciones</h4>
       <ul>
         <li>Activá las <b>notificaciones del navegador</b> (te pide permiso una vez).</li>
         <li>Definí cuántos <b>días antes</b> querés que te avise (por defecto 3).</li>
-        <li>Ver la lista de <b>próximos pagos</b> ordenados por cercanía.</li>
         <li>Enviarte una <b>notificación de prueba</b>.</li>
       </ul>
-      <div class="note">Las notificaciones se disparan <b>mientras la app está abierta</b>. La deduplicación diaria evita que te notifique varias veces el mismo día por el mismo pago.</div>
+      <div class="note">
+        <b>Android:</b> Chrome solo muestra la notificación si la pestaña <b>no está en primer plano</b>. Minimizá la app o cambiá de pestaña para verla en el cajón del sistema.
+      </div>
 
-      <h4>7 · Seguridad y contraseña</h4>
+      <h4>8 · Seguridad y contraseña</h4>
       <p>Todos tus datos se guardan <b>cifrados con AES-256-GCM</b>. La contraseña <b>nunca se almacena</b>: solo un hash derivado con PBKDF2 (150.000 iteraciones).</p>
       <div class="warn"><b>Si olvidás la contraseña, los datos no se recuperan.</b> Usá el botón <b>🔒</b> para bloquear la sesión cuando quieras.</div>
 
-      <h4>8 · Botón 🗑 (Limpiar)</h4>
-      <p>Elimina <b>todos los datos cargados</b> (extracto, posiciones manuales, tenencias y alertas) pero conserva tu contraseña. Pide <b>doble confirmación</b> antes de borrar.</p>
+      <h4>9 · Botón 🗑 (Limpiar)</h4>
+      <p>Elimina <b>todos los datos cargados</b> pero conserva tu contraseña. Pide <b>doble confirmación</b> antes de borrar.</p>
 
-      <h4>9 · Instalar la app</h4>
+      <h4>10 · Instalar la app</h4>
       <p>En <b>Android (Chrome/Edge)</b> aparece un botón <b>“⬇ Instalar app”</b> en el encabezado. En <b>iPhone/iPad</b> tocá <b>Compartir → Añadir a pantalla de inicio</b> desde Safari. En <b>escritorio</b> usá el ícono de instalación en la barra de direcciones.</p>
 
-      <h4>10 · Sobre la app</h4>
+      <h4>11 · Sobre la app</h4>
       <p><b>OMG DividendOS</b> es una PWA de análisis de dividendos de CEDEARs. Realizada por <b style="color:var(--acc)">Ohmygoch</b>. Todo el procesamiento es 100% local — ningún dato viaja a internet.</p>
     </div>
   </div>
@@ -498,15 +505,48 @@
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script>
 /* =========================================================================
-   OMG DividendOS · by Ohmygoch · v2.3
-   Novedades:
-   · Fusión inteligente de extractos (historial acumulativo, sin duplicados)
-   · Fix parseDate ISO + botón Limpiar + instalación PWA
+   OMG DividendOS · by Ohmygoch · v2.5
+   Novedades de esta versión:
+   · Diccionario de cadencias conocidas para CEDEARs con 1 solo pago
+   · Fix parseDate ISO
+   · Fusión inteligente de extractos (historial acumulativo)
+   · Botón Limpiar con doble confirmación
+   · Instalación PWA con banner y guía iOS
+   · Notificaciones robustas (Service Worker + fallback nativo)
    ========================================================================= */
 
 const $  = s => document.querySelector(s);
 const DAY = 864e5;
 const VAULT_KEY = 'omg.vault.v1';
+
+/* -------------------------------------------------------------------------
+   Diccionario de cadencias conocidas (en días)
+   Se usa como fallback cuando un CEDEAR tiene 1 solo pago registrado.
+   Fuente: convención de pago de dividendos de cada empresa subyacente.
+   ------------------------------------------------------------------------- */
+const KNOWN_CADENCE = {
+  /* ---- Trimestrales (~90 días) - empresas USA ---- */
+  'AAPL':90,'MSFT':90,'GOOGL':90,'GOOG':90,'AMZN':90,'META':90,'TSLA':90,
+  'NVDA':90,'AMD':90,'INTC':90,'KO':90,'PEP':90,'JNJ':90,'V':90,'MA':90,
+  'WMT':90,'MCD':90,'DIS':90,'NKE':90,'BA':90,'IBM':90,'CVX':90,'XOM':90,
+  'JPM':90,'BAC':90,'C':90,'WFC':90,'GS':90,'MS':90,'AXP':90,'VZ':90,
+  'T':90,'PFE':90,'MRK':90,'ABBV':90,'LLY':90,'BMY':90,'UNH':90,
+  'HD':90,'LOW':90,'TGT':90,'CVS':90,'MDT':90,'ORCL':90,'CRM':90,
+  'ADBE':90,'QCOM':90,'TXN':90,'AVGO':90,'MU':90,'PYPL':90,'NFLX':90,
+  'BRKB':90,'BRK.B':90,'MMM':90,'CAT':90,'GE':90,'F':90,'GM':90,
+  'HON':90,'UNP':90,'UPS':90,'LMT':90,'RTX':90,'DE':90,'MO':90,
+  'PM':90,'KHC':90,'GIS':90,'K':90,'CL':90,'KMB':90,'PG':90,
+  'COST':90,'SBUX':90,'YUM':90,'CMG':90,'DRI':90,'MAR':90,'HLT':90,
+  'B':90,'HL':90,'OXY':90,'MRVL':90,'SCCO':90,'MDLZ':90,'EA':90,
+  /* ---- Semestrales (~180 días) - empresas brasileñas y otras ---- */
+  'PBR':180,'VALE':180,'ITUB':180,'BBD':180,'ABEV':180,'SBS':180,
+  'GGAL':180,'YPF':180,'PAM':180,'SUPV':180,'BMA':180,'CEPU':180,'EDN':180,
+  'TGSU2':180,'TRAN':180,'COME':180,'CRES':180,'TECO2':180,
+  /* ---- Anuales (~365 días) - empresas chinas y otras ---- */
+  'BABA':365,'BIDU':365,'JD':365,'NTES':365,'TSM':365,'JOYY':365,'YY':365,
+  /* ---- Otros ---- */
+  '843500':365,'FM':180,'SOUTHERN':180
+};
 
 const NF2 = new Intl.NumberFormat('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2});
 const money = n => NF2.format(Number.isFinite(n)?n:0);
@@ -876,17 +916,33 @@ function compute(){
     const cv   = avg > 0 ? sd / avg : 0;
     const first = o.items[0].date; const last = o.items[n-1].date;
     const span  = daysBetween(first, last);
-    const freq  = n > 1 ? span / (n-1) : null;
+
+    /* ----------------------------------------------------------------
+       CADENCIA
+       · n > 1  → calculada: span / (n-1)
+       · n == 1 → fallback al diccionario de cadencias conocidas
+       · n == 1 y sin diccionario → null (queda "s/d")
+       ---------------------------------------------------------------- */
+    const freqCalc = n > 1 ? span / (n-1) : null;
+    const freqKnown = KNOWN_CADENCE[o.ticker] || null;
+    const freq = freqCalc || freqKnown;
+    const freqEstimated = !freqCalc && !!freqKnown; // true cuando usamos el diccionario
+
     const perYear = freq && freq > 0 ? 365 / freq : null;
     const runRate = perYear ? avg * perYear : tot * (365 / periodDays);
     const nextDate = freq ? addDays(last, Math.round(freq)) : null;
-    const conf = n >= 5 ? 1 : n >= 3 ? .75 : n >= 2 ? .5 : .25;
+
+    // La confianza baja si la cadencia es estimada (no calculada del historial)
+    let conf = n >= 5 ? 1 : n >= 3 ? .75 : n >= 2 ? .5 : .25;
+    if(freqEstimated) conf = Math.min(conf, .4);
     const consistency = Math.round(100 * conf * (1 - clamp(cv, 0, 1)));
     const nextInDays = nextDate ? daysBetween(new Date(), nextDate) : null;
+
     return {
       ticker:o.ticker, name:o.name, n, total:tot, avg, med, sd, cv,
       min: Math.min(...amts), max: Math.max(...amts),
-      first, last, span, freq, perYear, runRate, nextDate, nextInDays,
+      first, last, span, freq, freqEstimated, perYear, runRate,
+      nextDate, nextInDays,
       consistency, conf,
       share: total > 0 ? tot / total : 0,
       items: o.items, isManual:false, manualEntry:null
@@ -902,6 +958,7 @@ function compute(){
       existing.manualEntry = m;
       if(cadence > 0){
         existing.freq = cadence;
+        existing.freqEstimated = false; // manual = explícita, no estimada
         existing.perYear = 365 / cadence;
         const base = lastPay || existing.last;
         if(base){
@@ -921,6 +978,7 @@ function compute(){
         avg: amount, med: amount, sd: 0, cv: 0, min: 0, max: 0,
         first: base, last: base, span: 0,
         freq: cadence || null,
+        freqEstimated: false,
         perYear: cadence ? 365 / cadence : null,
         runRate: (cadence && amount) ? (365 / cadence) * amount : 0,
         nextDate,
@@ -999,6 +1057,10 @@ function compute(){
   if(porVencer.length){
     ins.push({ c:'w', i:'🔔', t:`<b>${porVencer.length} pago(s) por acreditarse esta semana:</b> ${porVencer.slice(0,5).map(t => t.ticker).join(', ')}.` });
   }
+  const estimadas = tickers.filter(t => t.freqEstimated).length;
+  if(estimadas > 0){
+    ins.push({ c:'', i:'~', t:`<b>${estimadas}</b> CEDEAR(s) usan cadencia <b>estimada</b> por convención (aparecen con <span class="est">~</span> en las tablas). Cargá más pagos o definilas manualmente en Seguimiento para mayor precisión.` });
+  }
 
   return {
     meta: state.meta, movs: all, credits, debits,
@@ -1022,28 +1084,69 @@ async function ensureNotifPermission(){
   const p = await Notification.requestPermission();
   return p === 'granted';
 }
-function notifIcon(){ try{ return 'data:image/svg+xml;base64,' + btoa(ICON_SVG); }catch(e){ return undefined; } }
+
+async function sendNotification(title, body, tag){
+  const options = {
+    body,
+    tag: tag || ('omg-' + Date.now()),
+    icon: 'icons/icon-192.png',
+    badge: 'icons/icon-96.png',
+    renotify: false,
+    silent: false
+  };
+
+  if('serviceWorker' in navigator){
+    try{
+      const reg = await Promise.race([
+        navigator.serviceWorker.ready,
+        new Promise(r => setTimeout(() => r(null), 1200))
+      ]) || await navigator.serviceWorker.getRegistration();
+
+      if(reg && typeof reg.showNotification === 'function'){
+        await reg.showNotification(title, options);
+        return true;
+      }
+    }catch(e){ console.warn('SW notif falló', e); }
+  }
+
+  try{
+    if(typeof Notification === 'function' && Notification.permission === 'granted'){
+      new Notification(title, options);
+      return true;
+    }
+  }catch(e){ console.warn('Constructor notif falló', e); }
+
+  return false;
+}
 
 function checkUpcomingAlerts(A){
   const s = state.settings;
   if(!s.alertsEnabled) return;
   if(!('Notification' in window) || Notification.permission !== 'granted') return;
+
   const days = +s.alertDaysBefore || 3;
-  const upcoming = A.upcoming.filter(t => t.nextInDays != null && t.nextInDays >= 0 && t.nextInDays <= days);
+  const upcoming = A.upcoming.filter(t =>
+    t.nextInDays != null && t.nextInDays >= 0 && t.nextInDays <= days
+  );
   if(!upcoming.length) return;
+
   const key = `${ymd(new Date())}|${upcoming.map(t => t.ticker + ':' + t.nextInDays).sort().join(',')}`;
   if(s.lastAlertKey === key) return;
+
   const lineas = upcoming.slice(0, 5).map(t =>
     `${t.ticker}: $${money(t.avg)} ${t.nextInDays === 0 ? 'hoy' : 'en ' + t.nextInDays + 'd'} (${fdate(t.nextDate)})`
   ).join('\n');
   const extra = upcoming.length > 5 ? `\n+${upcoming.length - 5} más…` : '';
-  try{
-    new Notification('OMG DividendOS · Dividendos próximos', {
-      body: lineas + extra, icon: notifIcon(), tag: 'omg-div-' + ymd(new Date())
-    });
-    s.lastAlertKey = key; persist();
-  }catch(e){ console.warn('notif error', e); }
+
+  sendNotification(
+    'OMG DividendOS · Dividendos próximos',
+    lineas + extra,
+    'omg-div-' + ymd(new Date())
+  ).then(ok => {
+    if(ok){ s.lastAlertKey = key; persist(); }
+  });
 }
+
 function updateBellBadge(A){
   const days = +state.settings.alertDaysBefore || 3;
   const n = (A?.upcoming || []).filter(t => t.nextInDays != null && t.nextInDays >= 0 && t.nextInDays <= days).length;
@@ -1186,9 +1289,12 @@ function renderCedears(A){
   const body = filtered.map(t => {
     const cons = t.consistency >= 70 ? 'p-hi' : t.consistency >= 40 ? 'p-md' : 'p-lo';
     const nextTxt = t.nextDate
-      ? `${fdate(t.nextDate)}${t.nextInDays != null ? `<span class="nm">${t.nextInDays >= 0 ? 'en '+t.nextInDays+' d' : 'vencido'}</span>` : ''}`
+      ? `${t.freqEstimated ? '<span class="est">~</span>' : ''}${fdate(t.nextDate)}${t.nextInDays != null ? `<span class="nm">${t.nextInDays >= 0 ? 'en '+t.nextInDays+' d' : 'vencido'}</span>` : ''}`
       : '<span class="nm">s/d</span>';
     const badge = t.isManual ? ' <span class="pill p-mnl">manual</span>' : '';
+    const freqTxt = t.freq
+      ? `${t.freqEstimated ? '<span class="est">~</span>' : ''}${Math.round(t.freq)}`
+      : '—';
     return `
       <tr>
         <td><span class="tk">${esc(t.ticker)}</span>${badge}<span class="nm">${esc(t.name)}</span></td>
@@ -1198,7 +1304,7 @@ function renderCedears(A){
         <td>$${money(t.avg)}</td>
         <td>$${money(t.med)}</td>
         <td class="${t.cv>.6?'neg':t.cv<.25?'pos':''}">${t.n ? (t.cv*100).toFixed(0)+'%' : '—'}</td>
-        <td>${t.freq ? Math.round(t.freq) : '—'}</td>
+        <td>${freqTxt}</td>
         <td>${t.perYear ? t.perYear.toFixed(1) : '—'}</td>
         <td>$${money(t.runRate)}</td>
         <td>${fdate(t.last)}</td>
@@ -1216,6 +1322,10 @@ function renderCedears(A){
         <thead><tr>${head}</tr></thead>
         <tbody>${body || '<tr><td colspan="13" class="empty">Sin resultados</td></tr>'}</tbody>
       </table>
+    </div>
+    <div class="legend">
+      <span><span class="est">~</span> cadencia estimada por convención (hay 1 solo pago)</span>
+      <span><b>manual</b> cadencia cargada por vos en Seguimiento</span>
     </div>`;
   const qi = $('#q');
   if(qi){
@@ -1245,10 +1355,10 @@ function renderCalendario(A){
               : `en ${t.nextInDays} d`;
     const badge = t.isManual ? ' <span class="pill p-mnl">manual</span>' : '';
     return `<tr>
-      <td>${fdate(t.nextDate)}</td>
+      <td>${t.freqEstimated ? '<span class="est">~</span>' : ''}${fdate(t.nextDate)}</td>
       <td><span class="tk">${esc(t.ticker)}</span>${badge}<span class="nm">${esc(t.name)}</span></td>
       <td>$${money(t.avg)}</td>
-      <td>${t.freq ? Math.round(t.freq)+' d' : '—'}</td>
+      <td>${t.freq ? (t.freqEstimated ? '<span class="est">~</span>' : '') + Math.round(t.freq)+' d' : '—'}</td>
       <td class="${cls}">${label}</td>
     </tr>`;
   }).join('');
@@ -1292,6 +1402,7 @@ function renderCalendario(A){
             <tbody>${proxHTML || '<tr><td colspan="5" class="empty">Sin datos suficientes para proyectar</td></tr>'}</tbody>
           </table>
         </div>
+        <div class="legend"><span><span class="est">~</span> fecha estimada por cadencia conocida (no del historial)</span></div>
       </div>
       <div class="card">
         <h3>Mapa de calor · meses × activo</h3>
@@ -1317,16 +1428,17 @@ function renderSeguimiento(A){
     }
     if(t.isManual) cls += ' manual';
     const manualBadge = t.isManual ? ' <span class="pill p-mnl">manual</span>' : '';
+    const estBadge = t.freqEstimated ? ' <span class="est">~</span>' : '';
     return `
       <div class="alertItem ${cls}">
         <div class="ad">${d != null && d >= 0 ? d : '!'}<small>${d != null && d >= 0 ? 'días' : 'vencido'}</small></div>
         <div class="am">
-          <b>${esc(t.ticker)}${manualBadge}</b>
+          <b>${esc(t.ticker)}${manualBadge}${estBadge}</b>
           ${esc(t.name || '')} · <span style="color:var(--dim2)">${fdate(t.nextDate)}</span>
         </div>
         <div class="ao">
           <b>$${money(t.avg)}</b>
-          <small>${t.freq ? 'cada ' + Math.round(t.freq) + ' d' : 's/d'}</small>
+          <small>${t.freq ? (t.freqEstimated ? '~' : '') + Math.round(t.freq) + ' d' : 's/d'}</small>
         </div>
       </div>`;
   }).join('');
@@ -1443,6 +1555,7 @@ function renderSeguimiento(A){
             <span><span class="pill p-soon">pronto</span> vence dentro del umbral configurado</span>
             <span><span class="pill p-ok">programado</span> todavía falta</span>
             <span><span class="pill p-mnl">manual</span> cargado por vos</span>
+            <span><span class="est">~</span> cadencia estimada por convención</span>
           </div>
         </div>
       </div>
@@ -1451,6 +1564,7 @@ function renderSeguimiento(A){
     <div class="card" style="margin-bottom:14px">
       <h3>Agregar CEDEAR al seguimiento</h3>
       ${form}
+      <div class="legend"><span>Si un CEDEAR ya tiene historial y querés forzar una cadencia distinta, agregalo acá — la app la usa como override.</span></div>
     </div>
 
     <div class="card">
@@ -1548,13 +1662,22 @@ function renderSeguimiento(A){
     testBtn.onclick = async () => {
       const ok = await ensureNotifPermission();
       if(!ok) return toast('Permiso denegado', true);
-      try{
-        new Notification('OMG DividendOS · Prueba', {
-          body: 'Si ves este mensaje, las notificaciones funcionan correctamente.',
-          icon: notifIcon()
-        });
-        toast('Notificación enviada');
-      }catch(e){ toast('No se pudo enviar', true); }
+
+      if('serviceWorker' in navigator){
+        try{ await navigator.serviceWorker.ready; }catch(e){}
+      }
+
+      const sent = await sendNotification(
+        'OMG DividendOS · Prueba',
+        'Si ves este mensaje, las notificaciones funcionan correctamente.',
+        'omg-test-' + Date.now()
+      );
+
+      if(sent){
+        toast('✓ Notificación enviada');
+      } else {
+        toast('No se pudo enviar · revisá los permisos del navegador', true);
+      }
     };
   }
 }
@@ -1569,9 +1692,10 @@ function renderPosiciones(A){
     const yoc = cost > 0 ? t.runRate / cost : null;
     const perCedear = qty > 0 ? t.runRate / qty : null;
     const badge = t.isManual ? ' <span class="pill p-mnl">manual</span>' : '';
+    const estMark = t.freqEstimated ? ' <span class="est">~</span>' : '';
     return `
       <tr>
-        <td><span class="tk">${esc(t.ticker)}</span>${badge}<span class="nm">${esc(t.name)}</span></td>
+        <td><span class="tk">${esc(t.ticker)}</span>${badge}${estMark}<span class="nm">${esc(t.name)}</span></td>
         <td><input type="number" min="0" step="1" data-t="${esc(t.ticker)}" data-f="qty" value="${qty || ''}" placeholder="0"></td>
         <td><input type="number" min="0" step="0.01" data-t="${esc(t.ticker)}" data-f="price" value="${price || ''}" placeholder="0,00"></td>
         <td>${perCedear != null ? '$' + money(perCedear) : '—'}</td>
@@ -1603,6 +1727,7 @@ function renderPosiciones(A){
           <tbody>${rows}</tbody>
         </table>
       </div>
+      <div class="legend"><span><span class="est">~</span> run-rate calculado con cadencia estimada</span></div>
     </div>`;
 
   document.querySelectorAll('#view input[data-t]').forEach(inp => {
@@ -1693,13 +1818,6 @@ async function handleFile(file){
     const rows = await readFileRows(file);
     const { meta, movs: nuevos } = rowsToData(rows);
 
-    /* ----------------------------------------------------------------
-       FUSIÓN INTELIGENTE
-       · Clave única: NRO OPERACION si existe → si no: fecha|ticker|monto
-       · Si la clave ya existe → se OMITE (no se duplica)
-       · Si es nueva → se AGREGA al historial existente
-       · NUNCA se borran los movimientos previos
-       ---------------------------------------------------------------- */
     const keyOf = m => m.id || `${ymd(m.date)}|${m.ticker}|${Number(m.credito).toFixed(2)}`;
 
     const claves = new Set(state.movs.map(keyOf));
@@ -1714,14 +1832,9 @@ async function handleFile(file){
       agregados++;
     });
 
-    // Orden ascendente por fecha (los cálculos lo esperan así)
     merged.sort((a,b) => a.date - b.date);
     state.movs = merged;
 
-    /* ----------------------------------------------------------------
-       MERGE DE METADATOS
-       Conserva el rango MÁS AMPLIO entre el extracto anterior y el nuevo
-       ---------------------------------------------------------------- */
     const md = state.meta || {};
     if(meta.desde){
       const prev = parseDate(md.desde), curr = parseDate(meta.desde);
@@ -1745,7 +1858,6 @@ async function handleFile(file){
     $('#brandSub').textContent =
       `${state.movs.length} movimientos · ${nTickers} CEDEARs · ${nManual} manuales`;
 
-    // Mensaje según el resultado
     if(agregados === 0 && duplicados > 0){
       toast(`Sin novedades · ${duplicados} movimiento${duplicados>1?'s':''} ya estaba${duplicados>1?'n':''} en el historial`);
     } else if(agregados > 0 && duplicados > 0){
