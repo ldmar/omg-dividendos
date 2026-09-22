@@ -315,6 +315,21 @@
   .ios-guide ol{margin:8px 0 8px 20px}
   .ios-guide li{margin:6px 0}
   .ios-guide .ico{display:inline-block;padding:2px 7px;border-radius:5px;background:#0a1219;border:1px solid #1e2b3b;font-size:12px;color:#7ee8c0;font-family:ui-monospace,monospace}
+  /* --- currency controls --- */
+  .fxBar{
+    display:flex;gap:14px;flex-wrap:wrap;align-items:center;padding:12px 16px;margin-bottom:14px;
+    background:linear-gradient(135deg,#0e1a26,#0b141d);border:1px solid var(--line);border-radius:12px;
+  }
+  .fxBar .g{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--dim)}
+  .fxBar .g label{font-weight:700;color:var(--dim2);text-transform:uppercase;letter-spacing:.5px;font-size:10.5px}
+  .fxBar input[type=number]{width:110px}
+  .fxBar .chk{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--dim);cursor:pointer;user-select:none}
+  .fxBar .chk input{width:16px;height:16px;accent-color:var(--acc);cursor:pointer}
+  .fxBar .info{font-size:11px;color:var(--dim2);margin-left:auto;line-height:1.4;max-width:420px;text-align:right}
+  .ccy{font-size:9.5px;color:var(--dim2);font-weight:600;letter-spacing:.4px;margin-left:3px;text-transform:uppercase}
+  .dual{display:flex;flex-direction:column;align-items:flex-end;line-height:1.25}
+  .dual b{font-size:12.5px}
+  .dual small{font-size:10.5px;color:var(--dim2);font-variant-numeric:tabular-nums}
   @media(max-width:640px){
     main{padding:14px}
     .kpi b{font-size:20px}
@@ -328,8 +343,57 @@
     .installBanner{flex-direction:column;align-items:flex-start}
     .installBanner .ia{width:100%}
     .installBanner .ia .btn{flex:1;justify-content:center}
+    .fxBar .info{margin-left:0;text-align:left;max-width:none}
   }
-</style>
+
+  /* --- comparativa benchmarks --- */
+  .cmpHeader{
+    display:flex;justify-content:space-between;align-items:baseline;
+    padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid var(--line);
+  }
+  .cmpBig{font-size:32px;font-weight:900;letter-spacing:-1.5px;color:var(--acc);font-variant-numeric:tabular-nums}
+  .cmpBigLbl{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.9px;color:var(--dim2);font-weight:700;margin-top:2px}
+  .cmpBigNote{font-size:11.5px;color:var(--dim);font-weight:600;text-align:right}
+  .cmpBody{display:flex;flex-direction:column;gap:12px}
+  .cmpRow{display:grid;grid-template-columns:200px 1fr;gap:14px;align-items:center}
+  @media(max-width:640px){.cmpRow{grid-template-columns:1fr;gap:6px}}
+  .cmpLabel b{display:block;font-size:12.5px;font-weight:700;color:var(--txt)}
+  .cmpLabel small{font-size:10.5px;color:var(--dim2)}
+  .cmpBar{display:flex;flex-direction:column;gap:4px}
+  .cmpTrack{
+    position:relative;height:10px;background:#1a2634;border-radius:5px;overflow:visible;
+  }
+  .cmpBench{
+    position:absolute;top:0;left:0;height:100%;border-radius:5px;
+    background:linear-gradient(90deg,#2c4054,#3a5068);opacity:.6;
+  }
+  .cmpUser{
+    position:absolute;top:-2px;left:0;height:14px;border-radius:7px;
+    background:linear-gradient(90deg,var(--acc),#0a9e70);
+    box-shadow:0 0 10px #00d68f55;z-index:2;min-width:3px;
+  }
+  .cmpValues{display:flex;justify-content:space-between;font-size:10.5px;font-variant-numeric:tabular-nums}
+  .cmpBenchVal{color:var(--dim2)}
+  .cmpUserVal{font-weight:700}
+  .cmpUserVal.pos{color:var(--acc)}
+  .cmpUserVal.neg{color:var(--dang)}
+  .cmpEdit{margin-top:16px;border-top:1px solid var(--line);padding-top:12px}
+  .cmpEdit summary{cursor:pointer;font-size:11.5px;color:var(--dim2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;user-select:none}
+  .cmpEdit summary:hover{color:var(--acc)}
+  .cmpEditGrid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+    gap:10px;margin-top:12px;
+  }
+  .cmpEditGrid label{
+    display:flex;flex-direction:column;gap:4px;font-size:10.5px;color:var(--dim2);
+    font-weight:700;text-transform:uppercase;letter-spacing:.5px;
+  }
+  .cmpEditGrid input{
+    width:100%;text-align:right;padding:7px 10px;font-size:12.5px;
+    background:#0d141d;border:1px solid var(--line);color:var(--txt);border-radius:7px;
+  }
+  
+ </style>
 </head>
 <body>
 
@@ -345,7 +409,7 @@
       <button type="submit" class="btn primary" id="lockBtn">Desbloquear</button>
     </form>
     <div class="lockErr" id="lockErr"></div>
-    <div class="lockFoot">Realizado por <b>Ohmygoch</b> · v2.5</div>
+    <div class="lockFoot">Realizado por <b>Ohmygoch</b> · v2.6</div>
   </div>
 </div>
 
@@ -404,7 +468,7 @@
   </section>
 
   <footer class="foot">
-    Realizado por <b>Ohmygoch</b><span class="ver">v2.5</span>
+    Realizado por <b>Ohmygoch</b><span class="ver">v2.6</span>
   </footer>
 </main>
 
@@ -446,35 +510,28 @@
       </ul>
 
       <h4>4 · Cadencia y próximo pago estimado</h4>
-      <p>La app calcula la cadencia entre pagos con el intervalo promedio observado. Cuando solo hay <b>1 pago registrado</b> para un CEDEAR, no hay suficiente información para calcularla, así que recurre a un <b>diccionario de cadencias conocidas</b> de los CEDEARs más populares:</p>
-      <ul>
-        <li><b>Trimestrales (~90 d):</b> AAPL, MSFT, KO, PEP, JNJ, V, WMT, MCD, IBM, CVX, etc.</li>
-        <li><b>Semestrales (~180 d):</b> PBR, VALE, ITUB, BBD, etc.</li>
-        <li><b>Anuales (~365 d):</b> BABA, TSM, JOYY, etc.</li>
-      </ul>
-      <p>Cuando se usa el diccionario, la fecha estimada aparece con un <b>~</b> y la cadencia se muestra como <i>~90 d</i> para que sepas que es una <b>estimación aproximada</b>, no un cálculo basado en tu historial.</p>
-      <div class="note">
-        <b>Para mayor precisión:</b> cargá al menos 2 pagos del mismo CEDEAR, o usá la pestaña <b>Seguimiento</b> para definir manualmente la cadencia y el último pago.
-      </div>
+      <p>La app calcula la cadencia entre pagos con el intervalo promedio observado. Cuando solo hay <b>1 pago registrado</b> para un CEDEAR, recurre a un <b>diccionario de cadencias conocidas</b> de los CEDEARs más populares (la mayoría trimestrales ~90 d, algunos semestrales ~180 d, otros anuales ~365 d). En esos casos, la fecha estimada aparece con un <b>~</b> para que sepas que es aproximada.</p>
 
       <h4>5 · Cargar varios extractos (historial acumulativo)</h4>
-      <p>Cuando cargás un archivo nuevo, la app <b>NO borra los movimientos anteriores</b>. Los fusiona inteligentemente:</p>
-      <ul>
-        <li><b>Movimiento nuevo</b> → se agrega al historial.</li>
-        <li><b>Movimiento ya existente</b> → se omite. La app lo identifica por el <b>N° de operación</b>; si el extracto no lo trae, por combinación de <b>fecha + ticker + monto</b>.</li>
-        <li><b>Rango de fechas</b> → se conserva el más amplio entre todos los extractos cargados.</li>
-      </ul>
+      <p>Cuando cargás un archivo nuevo, la app <b>NO borra los movimientos anteriores</b>. Los fusiona: si el N° de operación ya existe, lo omite; si es nuevo, lo agrega. El rango de fechas se conserva como el más amplio entre todos los extractos cargados.</p>
 
       <h4>6 · Seguimiento de CEDEARs que no están en el extracto</h4>
-      <p>En la pestaña <b>Seguimiento</b> podés agregar manualmente cualquier CEDEAR que ya tengas en cartera y no aparezca en el extracto descargado. Solo necesitás:</p>
-      <ul>
-        <li><b>Ticker</b> (obligatorio).</li>
-        <li><b>Cadencia</b>: cada cuánto paga.</li>
-        <li><b>Último pago</b>: fecha del último dividendo.</li>
-        <li><b>Monto esperado</b> (opcional).</li>
-      </ul>
+      <p>En <b>Seguimiento</b> podés agregar manualmente CEDEARs que ya tengas en cartera y no aparezcan en el extracto. Definí <b>cadencia</b>, <b>último pago</b> y <b>monto esperado</b>. La app calcula la próxima fecha y la cruza con las alertas.</p>
 
-      <h4>7 · Notificaciones</h4>
+      <h4>7 · Posiciones — Yield on Cost con dólares</h4>
+      <p>En <b>Posiciones</b> podés cargar cantidad y precio promedio (en ARS) para ver tu <b>Yield on Cost</b> real. Como los CEDEARs cotizan en pesos pero los dividendos provienen de acciones en dólares, la app te deja configurar:</p>
+      <ul>
+        <li><b>Tipo de cambio USD/ARS</b> — se aplica a todos los cálculos.</li>
+        <li><b>El dividendo del extracto está en USD</b> — si tu broker te acreditó los dividendos en dólares, activá este switch. El YOC se recalcula como <code>(dividendo × TC) / costo</code>, dando un porcentaje real.</li>
+      </ul>
+      <p>Además, todas las columnas muestran la <b>moneda explícita</b> (ARS o USD) para evitar confusión.</p>
+      <div class="note">
+        <b>Fórmula del YOC:</b><br>
+        <code>YOC = Ingreso anual (convertido a ARS) / Costo total (ARS)</code><br><br>
+        Si el dividendo está en USD, primero se multiplica por el TC. Si está en ARS, se usa directo.
+      </div>
+
+      <h4>8 · Notificaciones</h4>
       <ul>
         <li>Activá las <b>notificaciones del navegador</b> (te pide permiso una vez).</li>
         <li>Definí cuántos <b>días antes</b> querés que te avise (por defecto 3).</li>
@@ -484,17 +541,17 @@
         <b>Android:</b> Chrome solo muestra la notificación si la pestaña <b>no está en primer plano</b>. Minimizá la app o cambiá de pestaña para verla en el cajón del sistema.
       </div>
 
-      <h4>8 · Seguridad y contraseña</h4>
+      <h4>9 · Seguridad y contraseña</h4>
       <p>Todos tus datos se guardan <b>cifrados con AES-256-GCM</b>. La contraseña <b>nunca se almacena</b>: solo un hash derivado con PBKDF2 (150.000 iteraciones).</p>
       <div class="warn"><b>Si olvidás la contraseña, los datos no se recuperan.</b> Usá el botón <b>🔒</b> para bloquear la sesión cuando quieras.</div>
 
-      <h4>9 · Botón 🗑 (Limpiar)</h4>
+      <h4>10 · Botón 🗑 (Limpiar)</h4>
       <p>Elimina <b>todos los datos cargados</b> pero conserva tu contraseña. Pide <b>doble confirmación</b> antes de borrar.</p>
 
-      <h4>10 · Instalar la app</h4>
+      <h4>11 · Instalar la app</h4>
       <p>En <b>Android (Chrome/Edge)</b> aparece un botón <b>“⬇ Instalar app”</b> en el encabezado. En <b>iPhone/iPad</b> tocá <b>Compartir → Añadir a pantalla de inicio</b> desde Safari. En <b>escritorio</b> usá el ícono de instalación en la barra de direcciones.</p>
 
-      <h4>11 · Sobre la app</h4>
+      <h4>12 · Sobre la app</h4>
       <p><b>OMG DividendOS</b> es una PWA de análisis de dividendos de CEDEARs. Realizada por <b style="color:var(--acc)">Ohmygoch</b>. Todo el procesamiento es 100% local — ningún dato viaja a internet.</p>
     </div>
   </div>
@@ -505,27 +562,22 @@
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script>
 /* =========================================================================
-   OMG DividendOS · by Ohmygoch · v2.5
+   OMG DividendOS · by Ohmygoch · v2.6
    Novedades de esta versión:
-   · Diccionario de cadencias conocidas para CEDEARs con 1 solo pago
+   · Yield on Cost correcto con conversión USD/ARS en Posiciones
+   · Tipo de cambio y switch "dividendo en USD" configurables
+   · Diccionario de cadencias conocidas
    · Fix parseDate ISO
-   · Fusión inteligente de extractos (historial acumulativo)
+   · Fusión inteligente de extractos
    · Botón Limpiar con doble confirmación
-   · Instalación PWA con banner y guía iOS
-   · Notificaciones robustas (Service Worker + fallback nativo)
+   · Instalación PWA + notificaciones robustas
    ========================================================================= */
 
 const $  = s => document.querySelector(s);
 const DAY = 864e5;
 const VAULT_KEY = 'omg.vault.v1';
 
-/* -------------------------------------------------------------------------
-   Diccionario de cadencias conocidas (en días)
-   Se usa como fallback cuando un CEDEAR tiene 1 solo pago registrado.
-   Fuente: convención de pago de dividendos de cada empresa subyacente.
-   ------------------------------------------------------------------------- */
 const KNOWN_CADENCE = {
-  /* ---- Trimestrales (~90 días) - empresas USA ---- */
   'AAPL':90,'MSFT':90,'GOOGL':90,'GOOG':90,'AMZN':90,'META':90,'TSLA':90,
   'NVDA':90,'AMD':90,'INTC':90,'KO':90,'PEP':90,'JNJ':90,'V':90,'MA':90,
   'WMT':90,'MCD':90,'DIS':90,'NKE':90,'BA':90,'IBM':90,'CVX':90,'XOM':90,
@@ -538,19 +590,19 @@ const KNOWN_CADENCE = {
   'PM':90,'KHC':90,'GIS':90,'K':90,'CL':90,'KMB':90,'PG':90,
   'COST':90,'SBUX':90,'YUM':90,'CMG':90,'DRI':90,'MAR':90,'HLT':90,
   'B':90,'HL':90,'OXY':90,'MRVL':90,'SCCO':90,'MDLZ':90,'EA':90,
-  /* ---- Semestrales (~180 días) - empresas brasileñas y otras ---- */
   'PBR':180,'VALE':180,'ITUB':180,'BBD':180,'ABEV':180,'SBS':180,
   'GGAL':180,'YPF':180,'PAM':180,'SUPV':180,'BMA':180,'CEPU':180,'EDN':180,
   'TGSU2':180,'TRAN':180,'COME':180,'CRES':180,'TECO2':180,
-  /* ---- Anuales (~365 días) - empresas chinas y otras ---- */
   'BABA':365,'BIDU':365,'JD':365,'NTES':365,'TSM':365,'JOYY':365,'YY':365,
-  /* ---- Otros ---- */
   '843500':365,'FM':180,'SOUTHERN':180
 };
 
 const NF2 = new Intl.NumberFormat('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const NF0 = new Intl.NumberFormat('es-AR',{maximumFractionDigits:0});
 const money = n => NF2.format(Number.isFinite(n)?n:0);
-const pct1  = n => (Number.isFinite(n)? (n*100).toFixed(1):'0.0') + '%';
+const money0 = n => NF0.format(Number.isFinite(n)?n:0);
+const pct1  = n => (Number.isFinite(n)? (n*100).toFixed(2):'0.00') + '%';
+const pct2  = n => (Number.isFinite(n)? (n*100).toFixed(2):'0.00') + '%';
 const esc   = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const sum   = a => a.reduce((x,y)=>x+y,0);
 const mean  = a => a.length ? sum(a)/a.length : 0;
@@ -588,13 +640,11 @@ function toast(msg, isErr){
 function parseDate(v){
   if(v instanceof Date && !isNaN(v)) return new Date(v.getFullYear(), v.getMonth(), v.getDate());
   const s = String(v ?? '').trim();
-
   let m = s.match(/^(\d{4})-(\d{2})-(\d{2})(?:[T\s].*)?$/);
   if(m){
     const d = new Date(+m[1], +m[2]-1, +m[3]);
     return isNaN(d) ? null : d;
   }
-
   m = s.match(/(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})/);
   if(!m) return null;
   let y = +m[3]; if(y < 100) y += 2000;
@@ -655,12 +705,29 @@ function setLockMode(mode){
 function showLock(){ lockEl.style.display = 'grid'; setLockMode(vaultExists() ? 'unlock' : 'setup'); }
 function hideLock(){ lockEl.style.display = 'none'; }
 
+const DEFAULT_SETTINGS = {
+  alertsEnabled:false,
+  alertDaysBefore:3,
+  lastAlertKey:'',
+  usdArs: 1600,
+  runRateIsUSD: false,
+  // Benchmarks de comparación (editables)
+  benchmark: {
+    sp500: 1.04,          // S&P 500 dividend yield (%)
+    treasury10y: 4.96,    // US 10Y Treasury yield (%)
+    inflationUS: 3.4,     // Inflación USA (%)
+    incomePortfolioLow: 4,   // Cartera de ingresos típica — límite inferior
+    incomePortfolioHigh: 6,  // Cartera de ingresos típica — límite superior
+    cedearHigh: 7.4        // CEDEAR de alto yield de referencia (PBR)
+  }
+};
+
 async function createVault(password){
   const salt = crypto.getRandomValues(new Uint8Array(16));
   const key = await deriveKey(password, salt);
   const { iv, ct } = await encryptData(key, {
-    meta:{}, holdings:{}, movs:[],
-    manual:{}, settings:{ alertsEnabled:false, alertDaysBefore:3, lastAlertKey:'' }
+    meta:{}, holdings:{}, movs:[], manual:{},
+    settings: { ...DEFAULT_SETTINGS }
   });
   localStorage.setItem(VAULT_KEY, JSON.stringify({ salt: b64(salt), iv, ct }));
   sessionKey = key;
@@ -706,7 +773,7 @@ lockForm.addEventListener('submit', async e => {
     lockBtn.disabled = true; lockBtn.textContent = 'Creando…';
     try{
       await createVault(pass); hideLock();
-      initApp({ meta:{}, holdings:{}, movs:[], manual:{}, settings:{ alertsEnabled:false, alertDaysBefore:3, lastAlertKey:'' } });
+      initApp({ meta:{}, holdings:{}, movs:[], manual:{}, settings:{ ...DEFAULT_SETTINGS } });
       toast('✓ Panel protegido creado');
     }catch(err){ console.error(err); lockErr.textContent = 'Error al crear el panel.'; }
     finally{ lockBtn.disabled = false; lockBtn.textContent = 'Crear y entrar'; }
@@ -762,7 +829,7 @@ $('#btnReset').addEventListener('click', async () => {
   state.meta = {};
   state.holdings = {};
   state.manual = {};
-  state.settings = { alertsEnabled:false, alertDaysBefore:3, lastAlertKey:'' };
+  state.settings = { ...DEFAULT_SETTINGS };
 
   await saveVault({
     meta:{}, holdings:{}, manual:{},
@@ -917,22 +984,15 @@ function compute(){
     const first = o.items[0].date; const last = o.items[n-1].date;
     const span  = daysBetween(first, last);
 
-    /* ----------------------------------------------------------------
-       CADENCIA
-       · n > 1  → calculada: span / (n-1)
-       · n == 1 → fallback al diccionario de cadencias conocidas
-       · n == 1 y sin diccionario → null (queda "s/d")
-       ---------------------------------------------------------------- */
     const freqCalc = n > 1 ? span / (n-1) : null;
     const freqKnown = KNOWN_CADENCE[o.ticker] || null;
     const freq = freqCalc || freqKnown;
-    const freqEstimated = !freqCalc && !!freqKnown; // true cuando usamos el diccionario
+    const freqEstimated = !freqCalc && !!freqKnown;
 
     const perYear = freq && freq > 0 ? 365 / freq : null;
     const runRate = perYear ? avg * perYear : tot * (365 / periodDays);
     const nextDate = freq ? addDays(last, Math.round(freq)) : null;
 
-    // La confianza baja si la cadencia es estimada (no calculada del historial)
     let conf = n >= 5 ? 1 : n >= 3 ? .75 : n >= 2 ? .5 : .25;
     if(freqEstimated) conf = Math.min(conf, .4);
     const consistency = Math.round(100 * conf * (1 - clamp(cv, 0, 1)));
@@ -958,7 +1018,7 @@ function compute(){
       existing.manualEntry = m;
       if(cadence > 0){
         existing.freq = cadence;
-        existing.freqEstimated = false; // manual = explícita, no estimada
+        existing.freqEstimated = false;
         existing.perYear = 365 / cadence;
         const base = lastPay || existing.last;
         if(base){
@@ -1059,7 +1119,7 @@ function compute(){
   }
   const estimadas = tickers.filter(t => t.freqEstimated).length;
   if(estimadas > 0){
-    ins.push({ c:'', i:'~', t:`<b>${estimadas}</b> CEDEAR(s) usan cadencia <b>estimada</b> por convención (aparecen con <span class="est">~</span> en las tablas). Cargá más pagos o definilas manualmente en Seguimiento para mayor precisión.` });
+    ins.push({ c:'', i:'~', t:`<b>${estimadas}</b> CEDEAR(s) usan cadencia <b>estimada</b> por convención (aparecen con <span class="est">~</span>).` });
   }
 
   return {
@@ -1682,53 +1742,394 @@ function renderSeguimiento(A){
   }
 }
 
+/* =========================================================================
+   ACTUALIZACIÓN AUTOMÁTICA DE BENCHMARKS
+   Fuente: ConvexTrade Public API (sin key, CORS habilitado)
+   · DGS10 → Treasury 10Y
+   · CPIAUCSL → CPI (se calcula inflación anual YoY)
+   ========================================================================= */
+async function fetchBenchmarks(){
+  const btn = $('#btnRefreshBM');
+  const orig = btn ? btn.textContent : '';
+  if(btn){ btn.disabled = true; btn.textContent = '⏳ Actualizando…'; }
+
+  const results = { ok: [], fail: [] };
+
+  try{
+    // ---------- Treasury 10Y ----------
+    try{
+      const r = await fetch('https://convextrade.com/api/public/data/DGS10');
+      if(!r.ok) throw new Error('HTTP ' + r.status);
+      const j = await r.json();
+      const last = j.data && j.data.length ? j.data[j.data.length - 1] : null;
+      if(last && isFinite(last.value)){
+        state.settings.benchmark.treasury10y = +last.value.toFixed(2);
+        results.ok.push(`Tesoro 10Y: ${last.value.toFixed(2)}%`);
+      } else {
+        throw new Error('sin datos');
+      }
+    }catch(e){ results.fail.push('Tesoro 10Y'); }
+
+    // ---------- Inflación (CPI YoY) ----------
+    try{
+      const r = await fetch('https://convextrade.com/api/public/data/CPIAUCSL?start=' +
+        new Date(Date.now() - 400*24*3600*1000).toISOString().slice(0,10));
+      if(!r.ok) throw new Error('HTTP ' + r.status);
+      const j = await r.json();
+      const d = j.data || [];
+      if(d.length >= 13){
+        const latest = d[d.length - 1].value;
+        const yearAgo = d[d.length - 13].value;
+        const yoy = ((latest / yearAgo) - 1) * 100;
+        state.settings.benchmark.inflationUS = +yoy.toFixed(2);
+        results.ok.push(`Inflación USA: ${yoy.toFixed(2)}%`);
+      } else {
+        throw new Error('datos insuficientes');
+      }
+    }catch(e){ results.fail.push('Inflación'); }
+
+    // ---------- Persistir ----------
+    persist();
+    renderPosiciones(state.A);
+
+    const msg = results.ok.length
+      ? '✓ ' + results.ok.join(' · ')
+      : 'No se pudo actualizar';
+    toast(msg, results.ok.length === 0);
+
+  }catch(err){
+    console.error(err);
+    toast('Error al actualizar benchmarks', true);
+  } finally {
+    if(btn){ btn.disabled = false; btn.textContent = orig; }
+  }
+}
+
+/* =========================================================================
+   COMPARATIVA vs BENCHMARKS
+   ========================================================================= */
+function renderComparativa(yoc, tc){
+  const b = state.settings.benchmark || DEFAULT_SETTINGS.benchmark;
+  const yocPct = yoc != null ? yoc * 100 : null;
+
+  if(yocPct == null){
+    return `<div class="card" style="margin-bottom:14px">
+      <h3>Comparación con benchmarks</h3>
+      <div class="empty">Cargá tenencias (cantidad y precio) para ver tu YOC comparado con los benchmarks del mercado.</div>
+    </div>`;
+  }
+
+  // Definimos cada benchmark con su lógica de comparación
+  const items = [
+    {
+      label: 'S&P 500 (dividend yield)',
+      value: b.sp500,
+      ref: 'Índice de referencia de EE.UU.',
+      better: yocPct > b.sp500,
+      ratio: yocPct / b.sp500
+    },
+    {
+      label: 'Bono del Tesoro USA 10 años',
+      value: b.treasury10y,
+      ref: 'Tasa libre de riesgo',
+      better: yocPct > b.treasury10y,
+      ratio: yocPct / b.treasury10y
+    },
+    {
+      label: 'Inflación USA (CPI)',
+      value: b.inflationUS,
+      ref: 'Pérdida de poder adquisitivo',
+      better: yocPct > b.inflationUS,
+      ratio: yocPct / b.inflationUS
+    },
+    {
+      label: 'Cartera de ingresos típica',
+      value: b.incomePortfolioLow,
+      range: [b.incomePortfolioLow, b.incomePortfolioHigh],
+      ref: 'Rango objetivo 4–6%',
+      better: yocPct >= b.incomePortfolioLow,
+      ratio: yocPct / b.incomePortfolioLow
+    },
+    {
+      label: 'CEDEAR alto yield (PBR)',
+      value: b.cedearHigh,
+      ref: 'Referencia de CEDEAR con alto dividendo',
+      better: yocPct > b.cedearHigh,
+      ratio: yocPct / b.cedearHigh
+    }
+  ];
+
+  const maxVal = Math.max(yocPct, ...items.map(i => i.range ? i.range[1] : i.value));
+
+  const bars = items.map(it => {
+    const isRange = !!it.range;
+    const w = ((isRange ? it.range[1] : it.value) / maxVal) * 100;
+    const wUser = (yocPct / maxVal) * 100;
+    const cls = it.better ? 'pos' : 'neg';
+    const icon = it.better ? '✓' : '✗';
+    return `
+      <div class="cmpRow">
+        <div class="cmpLabel">
+          <b>${it.label}</b>
+          <small>${it.ref}</small>
+        </div>
+        <div class="cmpBar">
+          <div class="cmpTrack">
+            <div class="cmpBench" style="width:${w}%">
+              ${isRange ? '' : ''}
+            </div>
+            <div class="cmpUser" style="width:${wUser}%"></div>
+          </div>
+          <div class="cmpValues">
+            <span class="cmpBenchVal">${isRange ? b.incomePortfolioLow + '–' + b.incomePortfolioHigh : it.value}%</span>
+            <span class="cmpUserVal ${cls}">${yocPct.toFixed(2)}% ${icon}</span>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+
+  // Interpretación automática
+  const beats = items.filter(i => i.better).map(i => i.label);
+  const loses = items.filter(i => !i.better).map(i => i.label);
+
+  let verdict = '';
+  let verdictCls = '';
+  if(yocPct >= b.incomePortfolioHigh){
+    verdict = `Tu YOC de <b>${yocPct.toFixed(2)}%</b> supera el rango objetivo de una cartera de ingresos (${b.incomePortfolioLow}–${b.incomePortfolioHigh}%) y también la inflación. Tu cartera está generando ingresos reales por encima de la media.`;
+    verdictCls = 'g';
+  } else if(yocPct >= b.incomePortfolioLow){
+    verdict = `Tu YOC de <b>${yocPct.toFixed(2)}%</b> está dentro del rango de una cartera de ingresos típica (${b.incomePortfolioLow}–${b.incomePortfolioHigh}%), aunque por debajo del bono del Tesoro a 10 años. Es una base sólida, pero hay margen para optimizar.`;
+    verdictCls = '';
+  } else if(yocPct >= b.inflationUS){
+    verdict = `Tu YOC de <b>${yocPct.toFixed(2)}%</b> está por encima de la inflación (${b.inflationUS}%) pero por debajo del rango de una cartera de ingresos y del bono del Tesoro. Estás ganando poder adquisitivo, pero con margen para crecer.`;
+    verdictCls = 'w';
+  } else {
+    verdict = `Tu YOC de <b>${yocPct.toFixed(2)}%</b> está por debajo de la inflación (${b.inflationUS}%). En términos reales, tu cartera todavía no te está protegiendo del aumento de precios.`;
+    verdictCls = 'd';
+  }
+
+  // Posición relativa
+  const posText = [];
+  if(yocPct > b.sp500) posText.push(`por encima del S&P 500 (${b.sp500}%)`);
+  else posText.push(`por debajo del S&P 500 (${b.sp500}%)`);
+  if(yocPct > b.treasury10y) posText.push(`por encima del bono del Tesoro (${b.treasury10y}%)`);
+  else posText.push(`por debajo del bono del Tesoro (${b.treasury10y}%)`);
+  if(yocPct > b.inflationUS) posText.push(`por encima de la inflación (${b.inflationUS}%)`);
+  else posText.push(`por debajo de la inflación (${b.inflationUS}%)`);
+
+  const posSentence = `Estás ${posText.join(', ')}.`;
+
+  return `
+    <div class="card" style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+        <h3 style="margin:0">Comparación con benchmarks</h3>
+        <button class="btn" id="btnRefreshBM" style="font-size:11.5px;padding:6px 12px">
+          ↻ Actualizar datos
+        </button>
+      </div>
+      <div class="cmpHeader">
+        <div>
+          <span class="cmpBig">${yocPct.toFixed(2)}%</span>
+          <span class="cmpBigLbl">Tu Yield on Cost</span>
+        </div>
+        <div class="cmpBigNote">
+          ${beats.length} de ${items.length} benchmarks superados
+        </div>
+      </div>
+
+      <div class="cmpBody">${bars}</div>
+
+      <div class="ins" style="margin-top:14px">
+        <div class="${verdictCls}"><i>📊</i><span>${verdict}</span></div>
+        <div class=""><i>📌</i><span>${posSentence}</span></div>
+      </div>
+
+      <div class="cmpEdit">
+        <details>
+          <summary>Ajustar benchmarks</summary>
+          <div class="cmpEditGrid">
+            <label>S&P 500 <input type="number" step="0.01" data-bm="sp500" value="${b.sp500}">%</label>
+            <label>Tesoro 10Y <input type="number" step="0.01" data-bm="treasury10y" value="${b.treasury10y}">%</label>
+            <label>Inflación USA <input type="number" step="0.01" data-bm="inflationUS" value="${b.inflationUS}">%</label>
+            <label>Cartera mín. <input type="number" step="0.1" data-bm="incomePortfolioLow" value="${b.incomePortfolioLow}">%</label>
+            <label>Cartera máx. <input type="number" step="0.1" data-bm="incomePortfolioHigh" value="${b.incomePortfolioHigh}">%</label>
+            <label>CEDEAR alto <input type="number" step="0.1" data-bm="cedearHigh" value="${b.cedearHigh}">%</label>
+          </div>
+        </details>
+      </div>
+    </div>`;
+}
+
+/* =========================================================================
+   POSICIONES · con conversión USD/ARS
+   ========================================================================= */
 function renderPosiciones(A){
   const h = state.holdings;
+  const tc = +state.settings.usdArs || 1200;
+  const isUSD = !!state.settings.runRateIsUSD;
+
+  // Si el run-rate está expresado en USD, multiplicamos por TC para llevarlo a ARS
+  // para poder calcular el YOC contra el costo (que está en ARS).
+  const factor = isUSD ? tc : 1;
+
   const rows = A.tickers.map(t => {
     const pos = h[t.ticker] || {};
     const qty = +pos.qty || 0;
-    const price = +pos.price || 0;
-    const cost = qty * price;
-    const yoc = cost > 0 ? t.runRate / cost : null;
-    const perCedear = qty > 0 ? t.runRate / qty : null;
+    const price = +pos.price || 0;   // ARS
+    const cost = qty * price;         // ARS
+
+    // runRate del extracto — interpretado según el switch
+    const runRateARS = t.runRate * factor;   // siempre en ARS para el YOC
+    const runRateUSD = runRateARS / tc;
+
+    const yoc = cost > 0 ? runRateARS / cost : null;
+    const perCedearARS = qty > 0 ? runRateARS / qty : null;
+    const perCedearUSD = perCedearARS != null ? perCedearARS / tc : null;
+    const costUSD = cost / tc;
+
     const badge = t.isManual ? ' <span class="pill p-mnl">manual</span>' : '';
     const estMark = t.freqEstimated ? ' <span class="est">~</span>' : '';
+
+    const yocCls = yoc != null
+      ? (yoc >= 0.04 ? 'pos' : yoc >= 0.02 ? '' : 'neg')
+      : '';
+
     return `
       <tr>
         <td><span class="tk">${esc(t.ticker)}</span>${badge}${estMark}<span class="nm">${esc(t.name)}</span></td>
         <td><input type="number" min="0" step="1" data-t="${esc(t.ticker)}" data-f="qty" value="${qty || ''}" placeholder="0"></td>
         <td><input type="number" min="0" step="0.01" data-t="${esc(t.ticker)}" data-f="price" value="${price || ''}" placeholder="0,00"></td>
-        <td>${perCedear != null ? '$' + money(perCedear) : '—'}</td>
-        <td>$${money(t.runRate)}</td>
-        <td class="${yoc != null ? 'pos' : ''}">${yoc != null ? pct1(yoc) : '—'}</td>
-        <td>${cost > 0 ? '$' + money(cost) : '—'}</td>
+        <td>
+          <div class="dual">
+            <b>${perCedearUSD != null ? 'US$ ' + money(perCedearUSD) : '—'}</b>
+            <small>${perCedearARS != null ? '$ ' + money(perCedearARS) + ' ARS' : ''}</small>
+          </div>
+        </td>
+        <td>
+          <div class="dual">
+            <b>US$ ${money(runRateUSD)}</b>
+            <small>$${money(runRateARS)} ARS</small>
+          </div>
+        </td>
+        <td class="${yocCls}">${yoc != null ? pct2(yoc) : '—'}</td>
+        <td>
+          <div class="dual">
+            <b>$${money(cost)}</b>
+            <small>US$ ${money(costUSD)}</small>
+          </div>
+        </td>
       </tr>`;
   }).join('');
-  const totalAnual = sum(A.tickers.map(t => (+(h[t.ticker]?.qty) || 0) > 0 ? t.runRate : 0));
+
+  const totalAnualARS = sum(A.tickers.map(t => (+(h[t.ticker]?.qty) || 0) > 0 ? t.runRate * factor : 0));
+  const totalAnualUSD = totalAnualARS / tc;
   const totalCosto = sum(A.tickers.map(t => (+(h[t.ticker]?.qty) || 0) * (+(h[t.ticker]?.price) || 0)));
-  const yocTotal = totalCosto > 0 ? totalAnual / totalCosto : null;
+  const totalCostoUSD = totalCosto / tc;
+  const yocTotal = totalCosto > 0 ? totalAnualARS / totalCosto : null;
 
   $('#view').innerHTML = `
-    <div class="kpis" style="margin-bottom:16px">
-      <div class="kpi"><label>Ingreso anual proyectado</label><b>$${money(totalAnual)}</b><small>según tenencias cargadas</small></div>
-      <div class="kpi b"><label>Costo de la posición</label><b>$${money(totalCosto)}</b><small>cantidad × precio promedio</small></div>
-      <div class="kpi p"><label>Yield on cost</label><b>${yocTotal != null ? pct1(yocTotal) : '—'}</b><small>renta anual / costo total</small></div>
-      <div class="kpi w"><label>Ingreso mensual estimado</label><b>$${money(totalAnual / 12)}</b><small>promedio</small></div>
+    <div class="fxBar">
+      <div class="g">
+        <label>TC USD/ARS</label>
+        <input type="number" id="fxRate" min="1" step="0.01" value="${tc}">
+      </div>
+      <label class="chk" title="Marcá si tu broker acreditó los dividendos en USD (o si querés interpretar el run-rate como USD)">
+        <input type="checkbox" id="fxRunRateUSD" ${isUSD ? 'checked' : ''}>
+        <span>El dividendo del extracto está en <b>USD</b></span>
+      </label>
+      <div class="info">
+        Los CEDEARs cotizan en pesos pero los dividendos provienen de acciones en dólares.
+        Configurá el TC y si el run-rate viene en USD para obtener un <b>Yield on Cost real</b>.
+      </div>
     </div>
+
+    <div class="kpis" style="margin-bottom:16px">
+      <div class="kpi">
+        <label>Ingreso anual proyectado (USD)</label>
+        <b>US$ ${money(totalAnualUSD)}</b>
+        <small>≈ $${money(totalAnualARS)} ARS al TC ${money0(tc)}</small>
+      </div>
+      <div class="kpi b">
+        <label>Costo de la posición (ARS)</label>
+        <b>$${money(totalCosto)}</b>
+        <small>≈ US$ ${money(totalCostoUSD)}</small>
+      </div>
+      <div class="kpi p">
+        <label>Yield on cost</label>
+        <b>${yocTotal != null ? pct2(yocTotal) : '—'}</b>
+        <small>renta anual / costo total</small>
+      </div>
+      <div class="kpi w">
+        <label>Ingreso mensual estimado</label>
+        <b>US$ ${money(totalAnualUSD / 12)}</b>
+        <small>≈ $${money(totalAnualARS / 12)} ARS</small>
+      </div>
+    </div>
+    ${renderComparativa(yocTotal, tc)}
     <div class="card">
-      <h3>Tenencias (opcional) — ingresá cantidad y precio promedio de compra</h3>
+      <h3>Tenencias — ingresá cantidad y precio promedio de compra en ARS</h3>
       <div class="tw" style="max-height:600px">
         <table>
           <thead><tr>
-            <th>CEDEAR</th><th>Cantidad</th><th>Precio prom.</th>
-            <th>Dividendo anual / CEDEAR</th><th>Ingreso anual est.</th>
-            <th>Yield on cost</th><th>Costo posición</th>
+            <th>CEDEAR</th>
+            <th>Cantidad</th>
+            <th>Precio prom. (ARS)</th>
+            <th>Div. anual / CEDEAR</th>
+            <th>Ingreso anual est.</th>
+            <th>YOC</th>
+            <th>Costo posición (ARS)</th>
           </tr></thead>
           <tbody>${rows}</tbody>
         </table>
       </div>
-      <div class="legend"><span><span class="est">~</span> run-rate calculado con cadencia estimada</span></div>
+      <div class="legend">
+        <span><b>YOC</b> = ingreso anual ÷ costo total. Verde ≥ 4%, rojo &lt; 2%.</span>
+        <span>Si el dividendo viene en USD, activá el switch para convertir con el TC.</span>
+        <span><span class="est">~</span> run-rate con cadencia estimada</span>
+      </div>
     </div>`;
+
+  // Eventos de los controles de moneda
+  const fxInp = $('#fxRate');
+  if(fxInp){
+    fxInp.onchange = () => {
+      const v = parseFloat(fxInp.value);
+      state.settings.usdArs = (isFinite(v) && v > 0) ? v : 1200;
+      persist();
+      renderPosiciones(state.A);
+      toast(`✓ TC actualizado a $${money0(state.settings.usdArs)}`);
+    };
+  }
+  const fxChk = $('#fxRunRateUSD');
+  if(fxChk){
+    fxChk.onchange = () => {
+      state.settings.runRateIsUSD = !!fxChk.checked;
+      persist();
+      renderPosiciones(state.A);
+      toast(state.settings.runRateIsUSD
+        ? '✓ Run-rate tratado como USD'
+        : '✓ Run-rate tratado como ARS');
+    };
+  }
+
+  // Editor de benchmarks
+  document.querySelectorAll('#view input[data-bm]').forEach(inp => {
+    inp.onchange = () => {
+      const k = inp.dataset.bm;
+      const v = parseFloat(inp.value);
+      if(!isFinite(v)) return;
+      state.settings.benchmark = state.settings.benchmark || { ...DEFAULT_SETTINGS.benchmark };
+      state.settings.benchmark[k] = v;
+      persist();
+      renderPosiciones(state.A);
+      toast(`✓ Benchmark actualizado`);
+    };
+  });
+  // Botón de actualización automática
+  const btnBM = $('#btnRefreshBM');
+  if(btnBM){
+    btnBM.onclick = fetchBenchmarks;
+  }
 
   document.querySelectorAll('#view input[data-t]').forEach(inp => {
     inp.onchange = e => {
@@ -1773,7 +2174,7 @@ function renderDatos(A){
 const state = {
   movs: [], meta: {}, holdings: {},
   manual: {},
-  settings: { alertsEnabled:false, alertDaysBefore:3, lastAlertKey:'' },
+  settings: { ...DEFAULT_SETTINGS },
   view: 'resumen', sort: { key:'total', dir:-1 }, q:'', A:null
 };
 
@@ -1791,10 +2192,7 @@ function initApp(payload){
   state.meta     = payload.meta || {};
   state.holdings = payload.holdings || {};
   state.manual   = payload.manual || {};
-  state.settings = Object.assign(
-    { alertsEnabled:false, alertDaysBefore:3, lastAlertKey:'' },
-    payload.settings || {}
-  );
+  state.settings = Object.assign({ ...DEFAULT_SETTINGS }, payload.settings || {});
   state.movs = (payload.movs || []).map(m => ({ ...m, date: parseDate(m.date) })).filter(m => m.date);
 
   if(state.movs.length || Object.keys(state.manual).length){
